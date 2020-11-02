@@ -9,4 +9,36 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:srcCompat="@drawable/ab" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="이번 주 총 공부량 -> 41:30:12"
+        android:textSize="24dp"
+        android:layout_marginTop="50dp"/>
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="이번 주 하루 평균 공부량 -> 05:55:44"
+        android:textSize="24dp"
+        android:layout_marginTop="30dp"/>
+
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="이번 달 총 공부량 -> 154:55:30"
+        android:textSize="24dp"
+        android:layout_marginTop="30dp"/>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="이번 달 하루 평균 공부량 -> 04:59:51"
+        android:textSize="24dp"
+        android:layout_marginTop="30dp"/>
 </LinearLayout>
