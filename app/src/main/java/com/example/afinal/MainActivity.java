@@ -26,26 +26,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         quote = findViewById(R.id.quotes);
-        try {
-            JSONObject obj = new JSONObject(getJson());
-            String quotes = obj.getString("quotes");
-            JSONArray jsonArray = new JSONArray(quotes);
-
-            int rand = (int) (Math.random() * jsonArray.length());
-            JSONObject content = jsonArray.getJSONObject(rand);
-            String title = content.getString("quote");  //title은 json파일의 quote임
-            quote.setText(title);
-
-
-        } catch (JSONException ex) {
-            ex.printStackTrace();
-        }
+        setQuote(quote);
     }
 
+    //assets파일에서 json파일을 읽어오는 함수
     private String getJson() {
         String data = null;
         AssetManager assetManager = getAssets();
@@ -63,6 +50,33 @@ public class MainActivity extends AppCompatActivity {
         return data;
     }
 
+    //읽어온 json 파일을 string파일로 변환시켜 textView에 setText하는 함수
+    private void setQuote(TextView view) {
+        JSONObject obj, content;
+        JSONArray jsonArray;
+        String quotes, title;
+        try {
+            //json파일을 읽어와 JSONObject 파일로 변환
+            obj = new JSONObject(getJson());
+            //변환한 JSONObject에서 quotes key를 가진 값들을  string으로 변환한 뒤 quotes에 저장
+            quotes = obj.getString("quotes");
+            //quotes를 JSONArray 타입으로 변환
+            jsonArray = new JSONArray(quotes);
+
+            //랜덤값을 rand에 저장
+            int rand = (int) (Math.random() * jsonArray.length());
+            //JSONArray에서 랜덤값이 위치한 index를 추출하여 JSONObject로 변환
+            content = jsonArray.getJSONObject(rand);
+            //JSONObject title에 값 저장
+            title = content.getString("quote");  //title은 json파일의 quote임
+
+            //View에 텍스트 지정
+            view.setText(title);
+
+        } catch (JSONException ex) {
+            ex.printStackTrace();
+        }
+    }
 
     public void click(View v) {
         Intent intent_S = new Intent(MainActivity.this, StatisticsActivity.class);
