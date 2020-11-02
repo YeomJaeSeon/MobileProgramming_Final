@@ -8,8 +8,6 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class PlannerActivity extends AppCompatActivity {
-    Intent intent_H = new Intent(PlannerActivity.this, MainActivity.class);
-    Intent intent_S = new Intent(PlannerActivity.this, StatisticsActivity.class);
 
     @Override
     public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
@@ -17,6 +15,8 @@ public class PlannerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_planner);
     }
     public void click(View v){
+        Intent intent_H = new Intent(PlannerActivity.this, MainActivity.class);
+        Intent intent_S = new Intent(PlannerActivity.this, StatisticsActivity.class);
         int btnId = v.getId();
 
         switch(btnId){

@@ -7,8 +7,6 @@ import android.view.View;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class StatisticsActivity extends AppCompatActivity {
-    Intent intent_H = new Intent(StatisticsActivity.this, MainActivity.class);
-    Intent intent_P = new Intent(StatisticsActivity.this, PlannerActivity.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,6 +14,8 @@ public class StatisticsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_statistics);
     }
     public void click(View v){
+        Intent intent_H = new Intent(StatisticsActivity.this, MainActivity.class);
+        Intent intent_P = new Intent(StatisticsActivity.this, PlannerActivity.class);
         int btnId = v.getId();
 
         switch(btnId){

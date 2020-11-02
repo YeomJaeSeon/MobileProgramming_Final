@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.view.View;
 
 public class MainActivity extends AppCompatActivity {
-    Intent intent_P = new Intent(MainActivity.this, PlannerActivity.class);
-    Intent intent_S = new Intent(MainActivity.this, StatisticsActivity.class);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,16 +15,18 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
     public void click(View v){
+        Intent intent_P = new Intent(MainActivity.this, PlannerActivity.class);
+        Intent intent_S = new Intent(MainActivity.this, StatisticsActivity.class);
         int btnId = v.getId();
 
         switch(btnId){
             case R.id.status:
-                startActivity(intent_P);
+                startActivity(intent_S);
                 break;
             case R.id.home:
                 break;
             case R.id.planner:
-                startActivity(intent_S);
+                startActivity(intent_P);
                 break;
         }
     }
