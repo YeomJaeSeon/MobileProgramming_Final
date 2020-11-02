@@ -18,17 +18,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/font_size"
-            android:text="월간 목표"
+            android:text="월간 목표: "
             ></TextView>
         <EditText
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/textview_width"
             android:layout_height="wrap_content"
             android:textSize="@dimen/font_size"
             android:text=""></EditText>
     </LinearLayout>
 
     <CalendarView
-        app:layout_constraintTop_toBottomOf=""
+        app:layout_constraintTop_toBottomOf="@+id/daily_goal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
