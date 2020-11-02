@@ -15,8 +15,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
     }
     public void click(View v){
-        Intent intent_P = new Intent(MainActivity.this, PlannerActivity.class);
         Intent intent_S = new Intent(MainActivity.this, StatisticsActivity.class);
+        Intent intent_P = new Intent(MainActivity.this, PlannerActivity.class);
         int btnId = v.getId();
 
         switch(btnId){

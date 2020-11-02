@@ -10,8 +10,8 @@ import androidx.appcompat.app.AppCompatActivity;
 public class PlannerActivity extends AppCompatActivity {
 
     @Override
-    public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
-        super.onCreate(savedInstanceState, persistentState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_planner);
     }
     public void click(View v){
