@@ -12,4 +12,5 @@ public class PlannerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState, persistentState);
         setContentView(R.layout.activity_planner);
     }
+
 }
