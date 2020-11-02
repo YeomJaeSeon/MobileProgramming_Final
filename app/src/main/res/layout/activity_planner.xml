@@ -28,6 +28,7 @@
     </LinearLayout>
 
     <CalendarView
+        android:id="@+id/calendarView"
         app:layout_constraintTop_toBottomOf="@+id/daily_goal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

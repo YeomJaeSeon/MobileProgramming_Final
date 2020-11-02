@@ -23,8 +23,13 @@
             ></activity>
 
         <activity
-            android:name=".StatisticsActivity"
-            android:label="Statistics"
+        android:name=".StatisticsActivity"
+        android:label="Statistics"
+        ></activity>
+
+        <activity
+            android:name=".PlannerNote"
+            android:label="Note"
             ></activity>
 
     </application>
