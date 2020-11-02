@@ -16,6 +16,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".PlannerActivity"
+            android:label="Planner"
+            ></activity>
+
+        <activity
+            android:name=".StatisticsActivity"
+            android:label="Statistics"
+            ></activity>
+
     </application>
 
 </manifest>
