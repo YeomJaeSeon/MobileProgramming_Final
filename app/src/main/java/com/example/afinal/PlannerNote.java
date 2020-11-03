@@ -8,19 +8,16 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class PlannerNote extends AppCompatActivity {
-
-    static final int GET_STRING = 1;
-    static final int GET_NUMBER = 2;
-
-    EditText edit = findViewById(R.id.edit);
+    EditText edit;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
 
-        Intent intent = getIntent();
-        String data = intent.getStringExtra("INPUT_TEXT");
+        edit = findViewById(R.id.edit);
 
+        Intent intent = getIntent();
+        String data = intent.getStringExtra("ID"); // 선택한 년도 월 일임. - 이걸 파일처리를 이용할것
         edit.setText(data);
     }
 

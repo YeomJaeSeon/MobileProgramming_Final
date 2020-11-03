@@ -2,17 +2,12 @@ package com.example.afinal;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.PersistableBundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.CalendarView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class PlannerActivity extends AppCompatActivity {
 
@@ -26,14 +21,12 @@ public class PlannerActivity extends AppCompatActivity {
 
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-//                Toast.makeText(PlannerActivity.this, "토스트 메시지 띄우기 성공~!", Toast.LENGTH_SHORT).show();
-                Intent in = new Intent(PlannerActivity.this, PlannerNote.class);
-                int requestCode = year+month+dayOfMonth;
+                Toast.makeText(PlannerActivity.this, year+":"+month+":"+dayOfMonth, Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(PlannerActivity.this, PlannerNote.class);
+                String yearId = year+", "+month+", "+dayOfMonth;
 
-                in.putExtra("INPUT_TEXT", "염재선");
-//                in.putExtra("INPUT_TEXT", "염재선");
-//                in.putExtra("INPUT_TEXT", Integer.toString(requestCode));
-                startActivity(in);
+                i.putExtra("ID", yearId);
+                startActivity(i);
             }
         });
     }
