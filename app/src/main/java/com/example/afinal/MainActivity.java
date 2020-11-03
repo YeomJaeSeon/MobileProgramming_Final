@@ -1,6 +1,7 @@
 package com.example.afinal;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -17,19 +19,34 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import static android.widget.Toast.LENGTH_LONG;
 
 public class MainActivity extends AppCompatActivity {
+    TextView timerText;
+    Button stopStartButton;
+    Timer timer;
+    TimerTask timerTask;
+    Double time = 0.0;
 
-    TextView quote;
+    boolean timerStarted = false;
+
+    TextView quote,author;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         quote = findViewById(R.id.quotes);
-        setQuote(quote);
+        author=findViewById(R.id.author);
+        setQuote(quote,author);
+        timerText = (TextView) findViewById(R.id.timeText);
+        stopStartButton = (Button) findViewById(R.id.startstopbutton);
+
+        timer = new Timer();
+
     }
 
     //assets파일에서 json파일을 읽어오는 함수
@@ -51,10 +68,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //읽어온 json 파일을 string파일로 변환시켜 textView에 setText하는 함수
-    private void setQuote(TextView view) {
+    private void setQuote(TextView quote,TextView author) {
         JSONObject obj, content;
         JSONArray jsonArray;
-        String quotes, title;
+        String quotes, title,subtitle;
         try {
             //json파일을 읽어와 JSONObject 파일로 변환
             obj = new JSONObject(getJson());
@@ -69,16 +86,17 @@ public class MainActivity extends AppCompatActivity {
             content = jsonArray.getJSONObject(rand);
             //JSONObject title에 값 저장
             title = content.getString("quote");  //title은 json파일의 quote임
-
+            subtitle=content.getString("author"); //subtitle은 json파일의 author임
             //View에 텍스트 지정
-            view.setText(title);
+            quote.setText(title);
+            author.setText("- "+subtitle+" -");
 
         } catch (JSONException ex) {
             ex.printStackTrace();
         }
     }
 
-    public void click(View v) {
+    public void switchIntent(View v) {
         Intent intent_S = new Intent(MainActivity.this, StatisticsActivity.class);
         Intent intent_P = new Intent(MainActivity.this, PlannerActivity.class);
         int btnId = v.getId();
@@ -94,4 +112,63 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+    public void startStopTapped(View view) {
+        if (timerStarted == false) {
+            timerStarted = true;
+            stopStartButton.setText("STOP");
+            stopStartButton.setTextColor(ContextCompat.getColor(this, R.color.red));
+            startTimer();
+        } else {
+            timerStarted = false;
+            stopStartButton.setText("START");
+            stopStartButton.setTextColor(ContextCompat.getColor(this, R.color.green));
+            timerTask.cancel();
+        }
+    }
+
+    private void startTimer() {
+        timerTask = new TimerTask() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        time++;
+                        timerText.setText(getTimerText());
+                    }
+                });
+            }
+        };
+        timer.scheduleAtFixedRate(timerTask, 0, 1000);
+    }
+
+    private String getTimerText() {
+        int rounded = (int) Math.round(time);
+        int seconds = ((rounded % 86400) % 3600) % 60;
+        int minutes = ((rounded % 86400) % 3600) / 60;
+        int hours = ((rounded % 86400) / 3600);
+
+        return formatTime(seconds, minutes, hours);
+    }
+    private String formatTime(int seconds, int minutes, int hours) {
+        return String.format("%02d", hours) + " : " + String.format("%02d", minutes) + " : " + String.format("%02d", seconds);
+    }
+
+    public void click(View v){
+        Intent intent_S = new Intent(MainActivity.this, StatisticsActivity.class);
+        Intent intent_P = new Intent(MainActivity.this, PlannerActivity.class);
+        int btnId = v.getId();
+
+        switch(btnId){
+            case R.id.status:
+                startActivity(intent_S);
+                break;
+            case R.id.home:
+                break;
+            case R.id.planner:
+                startActivity(intent_P);
+                break;
+        }
+    }
+
 }
