@@ -13,6 +13,10 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.FirebaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -24,7 +28,10 @@ import java.util.TimerTask;
 
 import static android.widget.Toast.LENGTH_LONG;
 
+
 public class MainActivity extends AppCompatActivity {
+    //https://firebase.google.com/docs/database/android/read-and-write?hl=ko
+
     TextView timerText;
     Button stopStartButton;
     Timer timer;
@@ -33,15 +40,21 @@ public class MainActivity extends AppCompatActivity {
 
     boolean timerStarted = false;
 
-    TextView quote,author;
-
+    //database 가져오기
+    private DatabaseReference mDatabase;
+    TextView quote, author;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
+        mDatabase=FirebaseDatabase.getInstance().getReference();
+
+        mDatabase.child("data").child("month").child("day").setValue("할일");
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         quote = findViewById(R.id.quotes);
-        author=findViewById(R.id.author);
-        setQuote(quote,author);
+        author = findViewById(R.id.author);
+        setQuote(quote, author);
         timerText = (TextView) findViewById(R.id.timeText);
         stopStartButton = (Button) findViewById(R.id.startstopbutton);
 
@@ -49,10 +62,14 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
     //assets파일에서 json파일을 읽어오는 함수
     private String getJson() {
+
         String data = null;
         AssetManager assetManager = getAssets();
+
+
         try {
             InputStream is = assetManager.open("quotes.json");
             int size = is.available();
@@ -68,10 +85,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //읽어온 json 파일을 string파일로 변환시켜 textView에 setText하는 함수
-    private void setQuote(TextView quote,TextView author) {
+    private void setQuote(TextView quote, TextView author) {
         JSONObject obj, content;
         JSONArray jsonArray;
-        String quotes, title,subtitle;
+        String quotes, title, subtitle;
         try {
             //json파일을 읽어와 JSONObject 파일로 변환
             obj = new JSONObject(getJson());
@@ -86,10 +103,10 @@ public class MainActivity extends AppCompatActivity {
             content = jsonArray.getJSONObject(rand);
             //JSONObject title에 값 저장
             title = content.getString("quote");  //title은 json파일의 quote임
-            subtitle=content.getString("author"); //subtitle은 json파일의 author임
+            subtitle = content.getString("author"); //subtitle은 json파일의 author임
             //View에 텍스트 지정
             quote.setText(title);
-            author.setText("- "+subtitle+" -");
+            author.setText("- " + subtitle + " -");
 
         } catch (JSONException ex) {
             ex.printStackTrace();
@@ -112,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
+
     public void startStopTapped(View view) {
         if (timerStarted == false) {
             timerStarted = true;
@@ -150,6 +168,7 @@ public class MainActivity extends AppCompatActivity {
 
         return formatTime(seconds, minutes, hours);
     }
+
     private String formatTime(int seconds, int minutes, int hours) {
         return String.format("%02d", hours) + " : " + String.format("%02d", minutes) + " : " + String.format("%02d", seconds);
     }
