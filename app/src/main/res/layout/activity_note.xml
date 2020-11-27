@@ -38,6 +38,7 @@
         android:layout_height="wrap_content"
         android:text="+"
         android:textSize="30sp"
+        android:onClick="addTodo"
         app:layout_constraintBottom_toTopOf="@+id/linearLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.9"

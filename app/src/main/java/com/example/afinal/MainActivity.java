@@ -14,8 +14,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.FirebaseError;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,9 +51,25 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
-        mDatabase=FirebaseDatabase.getInstance().getReference();
-
-        mDatabase.child("data").child("month").child("day").child("Todo2").setValue("놀기");
+        //DatabaseReference 객체의 ValueEventListener는 데이터의 초기 상태를 확인할 때나 데이터가 변경될 때마다 호출됩니다.
+        //작업이 완료되면 onDataChange() 메서드를
+        //작업 중 에러가 발생하면 onCancelled() 메서드를 호출합니다.
+//        mDatabase=FirebaseDatabase.getInstance().getReference();
+//        mDatabase.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(DataSnapshot dataSnapshot) {
+//                // This method is called once with the initial value and again
+//                // whenever data at this location is updated.
+//                String value = dataSnapshot.getValue().toString();
+//                Log.d("Database", "Value is: " + value);
+//            }
+//
+//            @Override
+//            public void onCancelled(DatabaseError error) {
+//                // Failed to read value
+//                Log.w("Database", "Failed to read value.", error.toException());
+//            }
+//        });
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);

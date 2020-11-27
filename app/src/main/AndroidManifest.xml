@@ -33,7 +33,7 @@
             ></activity>
         <activity
             android:name=".PlannerDetailActivity"
-            android:label="Note"
+            android:label="Detail"
             ></activity>
 
     </application>
