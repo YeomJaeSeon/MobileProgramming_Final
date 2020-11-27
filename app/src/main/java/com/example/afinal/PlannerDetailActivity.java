@@ -6,12 +6,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,13 +28,13 @@ public class PlannerDetailActivity extends AppCompatActivity {
     int day;
     String todo;
     String times;
-    String importance;
+    String importance ="";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        
+
         mDatabase=FirebaseDatabase.getInstance().getReference();
         radioButton = (RadioButton) findViewById(R.id.radioButton);
         radioButton1 = (RadioButton) findViewById(R.id.radioButton1);
@@ -68,7 +70,21 @@ public class PlannerDetailActivity extends AppCompatActivity {
             times = inputTimes.getText().toString();
 
             Log.i("Tag",todo+month+day+times+importance);
-            writeNewTodo(todo,month,day,times,importance,3);
+            if(todo.getBytes().length <= 0){
+                Toast.makeText(this, "할일 입력해주세요..", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            else if(times.getBytes().length <= 0){
+                Toast.makeText(this, "예상 시간 입력해주세요..", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            else if(importance.getBytes().length<=0){
+                Toast.makeText(this, "중요도 입력해주세요..", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            Date time = new Date();
+            writeNewTodo(todo,month,day,times,importance, (int)time.getTime());
+            this.finish();
         }
     }
     public void writeNewTodo(String _name, int _month, int _day, String _estimatedTime, String _importance, int _id) {
