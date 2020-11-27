@@ -24,7 +24,7 @@ public class PlannerActivity extends AppCompatActivity {
                 month++;
                 Toast.makeText(PlannerActivity.this, year+":"+month+":"+dayOfMonth, Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(PlannerActivity.this, PlannerNote.class);
-                String yearId = year+", "+month+", "+dayOfMonth;
+                String yearId = year+","+month+","+dayOfMonth;
 
                 i.putExtra("ID", yearId);
                 startActivity(i);

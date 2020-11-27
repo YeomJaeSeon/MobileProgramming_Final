@@ -42,13 +42,15 @@ public class MainActivity extends AppCompatActivity {
 
     //database 가져오기
     private DatabaseReference mDatabase;
+
+
     TextView quote, author;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
         mDatabase=FirebaseDatabase.getInstance().getReference();
 
-        mDatabase.child("data").child("month").child("day").setValue("할일");
+        mDatabase.child("data").child("month").child("day").child("Todo2").setValue("놀기");
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
