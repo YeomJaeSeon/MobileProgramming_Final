@@ -20,5 +20,4 @@ public class PlannerNote extends AppCompatActivity {
         String data = intent.getStringExtra("ID"); // 선택한 년도 월 일임. - 이걸 파일처리를 이용할것
         edit.setText(data);
     }
-
 }
