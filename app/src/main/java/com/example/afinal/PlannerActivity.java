@@ -21,6 +21,7 @@ public class PlannerActivity extends AppCompatActivity {
 
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+                month++;
                 Toast.makeText(PlannerActivity.this, year+":"+month+":"+dayOfMonth, Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(PlannerActivity.this, PlannerNote.class);
                 String yearId = year+", "+month+", "+dayOfMonth;
