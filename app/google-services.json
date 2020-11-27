@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "504049490132",
+    "firebase_url": "https://gongbubangwol.firebaseio.com",
+    "project_id": "gongbubangwol",
+    "storage_bucket": "gongbubangwol.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:504049490132:android:0566399501668bee6c8341",
+        "android_client_info": {
+          "package_name": "com.example.afinal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "504049490132-0ej78gfqjcd5u17n1c7o16ob70atu4sb.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxfTr6-d59a5KOw9fzw-jmlddgvSlaqew"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "504049490132-0ej78gfqjcd5u17n1c7o16ob70atu4sb.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
