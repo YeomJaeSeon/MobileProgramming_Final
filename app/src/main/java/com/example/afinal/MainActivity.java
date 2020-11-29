@@ -52,24 +52,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
 
         mDatabase= FirebaseDatabase.getInstance().getReference();
-        mDatabase.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                // This method is called once with the initial value and again
-                // whenever data at this location is updated.
-                if (dataSnapshot.getValue() != null) {
-                    String value = dataSnapshot.getValue().toString();
-                    Log.d("Database", "Value is: " + value);
-                }else{
-                    Log.w("Database","Value 없음");
-                }
-            }
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Failed to read value
-                Log.w("Database", "Failed to read value.", error.toException());
-            }
-        });
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         quote = findViewById(R.id.quotes);

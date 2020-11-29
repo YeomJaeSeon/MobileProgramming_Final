@@ -1,0 +1,43 @@
+
+
+// DB값 가져오는 코드
+//
+mDatabase.child("경로").child("경로").addListenerForSingleValueEvent(
+
+            new ValueEventListener () {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                dataSnapShot.getValue(Todo.class);
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+                // Getting Post failed, log a message
+            }
+    });
+
+
+//DB값 저장하는 코드
+//
+   public void writeNewTodo(String _name, int _month, int _day, int _estimatedTime, String _importance, Long _id) {
+
+        HashMap<String, Object> childUpdates = new HashMap<>();
+        Todo todo = new Todo(_name, _month, _day, _estimatedTime, _importance, _id);
+        Map<String, Object> todoData = todo.toMap();
+
+        //Database에 들어갈 경로 설정정
+        childUpdates.put("/datas/" + _month + "/" + _day + "/" + _id, todoData);
+        mDatabase.updateChildren(childUpdates).addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Log.d("Database", "데이터 저장 완료");
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Log.e("Database", "데이터 저장 실패");
+            }
+        });
+    }
+
+}
