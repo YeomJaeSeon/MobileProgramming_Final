@@ -7,7 +7,7 @@ mDatabase.child("경로").child("경로").addListenerForSingleValueEvent(
             new ValueEventListener () {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                dataSnapShot.getValue(Todo.class);
+                dataSnapshot.getValue(Todo.class);
             }
 
             @Override

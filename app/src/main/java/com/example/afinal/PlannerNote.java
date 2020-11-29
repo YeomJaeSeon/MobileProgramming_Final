@@ -38,16 +38,42 @@ public class PlannerNote extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
-
-
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        list = findViewById(R.id.list);
+
         listItem = new ArrayList<String>();
+        adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, listItem);
+
+        list = findViewById(R.id.list);
+        list.setAdapter(adapter);
+
+        //list.setOnItemClickListener();
 
         Intent intent = getIntent();
-
         final String data = intent.getStringExtra("ID"); // 선택한 년도 월 일임. - 이걸 파일처리를 이용할것
+
+        String [] days=data.split("-");
         setTitle(data);
+
+        Log.d("day",days[1]);
+        Log.d("day",days[2]);
+
+        //db 가져오기
+        mDatabase.child("datas").child(days[1]).child(days[2]).addListenerForSingleValueEvent(
+
+                new ValueEventListener () {
+                    @Override
+                    public void onDataChange(DataSnapshot dataSnapshot) {
+                        for(DataSnapshot child:dataSnapshot.getChildren()){
+                            listItem.add("할일:"+child.getValue(Todo.class).name+", 걸리는 시간:"+String.valueOf(child.getValue(Todo.class).estimatedTime)+"시간"+", 난이도:"+child.getValue(Todo.class).importance);
+                            adapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(DatabaseError databaseError) {
+                        Log.e("database","Wring Url");
+                    }
+                });
 
         addBtn = findViewById(R.id.button);
         addBtn.setOnClickListener(new View.OnClickListener() {
@@ -70,7 +96,7 @@ public class PlannerNote extends AppCompatActivity {
         String id = data.getStringExtra("id");
 
 
-        DatabaseReference todo = mDatabase.child("datas").child(month).child(day).child(id);
+        final DatabaseReference todo = mDatabase.child("datas").child(month).child(day).child(id);
 
         if (requestCode == GET_STRING) {
             if (resultCode == RESULT_OK) {
@@ -80,27 +106,13 @@ public class PlannerNote extends AppCompatActivity {
                 todo.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-
-                        listItem.add("할일:"+snapshot.getValue(Todo.class).name);
-                        listItem.add("걸리는 시간:"+String.valueOf(snapshot.getValue(Todo.class).estimatedTime)+"시간");
-                        listItem.add("난이도:"+snapshot.getValue(Todo.class).importance);
-
-                        //어뎁터 세팅
-                        adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, listItem);
-
-                        list.setAdapter(adapter);
+                        listItem.add("할일:"+snapshot.getValue(Todo.class).name+", 걸리는 시간:"+String.valueOf(snapshot.getValue(Todo.class).estimatedTime)+"시간"+", 난이도:"+snapshot.getValue(Todo.class).importance);
+                        adapter.notifyDataSetChanged();
                     }
-
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
-
                     }
                 });
-                listItem = new ArrayList<String>();
-                adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, listItem);
-
-                list = findViewById(R.id.list);
-                list.setAdapter(adapter);
             } else if (resultCode == RESULT_CANCELED) {
                 Log.e("Intent", "값을 받지 못함");
             }
