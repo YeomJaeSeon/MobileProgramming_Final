@@ -11,6 +11,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+
 import java.util.ArrayList;
 
 
@@ -22,9 +25,13 @@ public class PlannerNote extends AppCompatActivity {
 
     Button addBtn;
 
+    private DatabaseReference mDatabase;
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
+
+        mDatabase = FirebaseDatabase.getInstance().getReference();
 
         Intent intent = getIntent();
         final String data = intent.getStringExtra("ID"); // 선택한 년도 월 일임. - 이걸 파일처리를 이용할것

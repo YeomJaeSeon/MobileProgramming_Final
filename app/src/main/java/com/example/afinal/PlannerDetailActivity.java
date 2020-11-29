@@ -24,10 +24,11 @@ public class PlannerDetailActivity extends AppCompatActivity {
     RadioButton radioButton, radioButton1, radioButton2;
 
     private DatabaseReference mDatabase;
+
     int month;
     int day;
     String todo;
-    String times;
+    int times;
     String importance ="";
 
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +51,7 @@ public class PlannerDetailActivity extends AppCompatActivity {
         day = Integer.parseInt(div[2]);
 
         inputTodo = findViewById(R.id.editTextTextPersonName);
-        inputTimes = findViewById(R.id.editTextTextPersonName2);
+        inputTimes = findViewById(R.id.editTextNumber);
     }
     RadioButton.OnClickListener radioButtonClickListener = new RadioButton.OnClickListener(){
         @Override public void onClick(View view) {
@@ -67,14 +68,20 @@ public class PlannerDetailActivity extends AppCompatActivity {
     public void click(View v){
         if(v.getId() == R.id.add){
             todo = inputTodo.getText().toString();
-            times = inputTimes.getText().toString();
+            String toTime = inputTimes.getText().toString();
+            try{
+                times = Integer.parseInt(toTime);
+            }catch(NumberFormatException ex){
+                System.out.println("not a number" + ex);
+            }
+
 
             Log.i("Tag",todo+month+day+times+importance);
             if(todo.getBytes().length <= 0){
                 Toast.makeText(this, "할일 입력해주세요..", Toast.LENGTH_SHORT).show();
                 return;
             }
-            else if(times.getBytes().length <= 0){
+            else if(inputTimes.getText().toString().getBytes().length <= 0){
                 Toast.makeText(this, "예상 시간 입력해주세요..", Toast.LENGTH_SHORT).show();
                 return;
             }
@@ -87,7 +94,7 @@ public class PlannerDetailActivity extends AppCompatActivity {
             this.finish();
         }
     }
-    public void writeNewTodo(String _name, int _month, int _day, String _estimatedTime, String _importance, int _id) {
+    public void writeNewTodo(String _name, int _month, int _day, int _estimatedTime, String _importance, int _id) {
 
         HashMap<String, Object> childUpdates = new HashMap<>();
         Todo todo = new Todo(_name,_month,_day,_estimatedTime,_importance,_id);

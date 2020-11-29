@@ -9,13 +9,13 @@ import java.util.Map;
 
 public class Todo {
     public String name;
-    public String estimatedTime;
+    public int estimatedTime;
     public String importance;
     public int month;
     public int day;
     public int id;
     //생성자
-    public Todo(String _name,int _month, int _day,String _estimatedTime, String _importance,int _id){
+    public Todo(String _name,int _month, int _day,int _estimatedTime, String _importance,int _id){
         this.name=_name;
         this.month = _month;
         this.day = _day;
