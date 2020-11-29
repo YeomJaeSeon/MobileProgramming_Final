@@ -51,7 +51,7 @@ public class PlannerDetailActivity extends AppCompatActivity {
         day = Integer.parseInt(div[2]);
 
         inputTodo = findViewById(R.id.editTextTextPersonName);
-        inputTimes = findViewById(R.id.editTextNumber);
+        inputTimes = findViewById(R.id.editTextEstimatedTime);
     }
     RadioButton.OnClickListener radioButtonClickListener = new RadioButton.OnClickListener(){
         @Override public void onClick(View view) {
