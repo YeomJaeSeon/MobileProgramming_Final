@@ -4,16 +4,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.firebase.FirebaseError;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -24,46 +25,102 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import static android.widget.Toast.LENGTH_LONG;
-
 
 public class MainActivity extends AppCompatActivity {
-    //https://firebase.google.com/docs/database/android/read-and-write?hl=ko
 
+    Button addBtn;
     TextView timerText;
     Button stopStartButton;
     Timer timer;
     TimerTask timerTask;
     Double time = 0.0;
-
+    String curTime;
+    String[] curTimeArr;
+    TextView quote, author;
     boolean timerStarted = false;
+
+    ArrayAdapter<String> adapter;
+    ArrayList<String> listItem;
+    ListView listView;
 
     //database 가져오기
     private DatabaseReference mDatabase;
 
 
-    TextView quote, author;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        mDatabase= FirebaseDatabase.getInstance().getReference();
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         quote = findViewById(R.id.quotes);
         author = findViewById(R.id.author);
         setQuote(quote, author);
+
         timerText = (TextView) findViewById(R.id.timeText);
         stopStartButton = (Button) findViewById(R.id.startstopbutton);
-
         timer = new Timer();
 
-    }
+        mDatabase = FirebaseDatabase.getInstance().getReference();
+
+        listItem = new ArrayList<String>();
+        adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, listItem);
+        listView = findViewById(R.id.listViewTodo);
+        listView.setAdapter(adapter);
+
+        Date date = new Date(System.currentTimeMillis());
+        SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+        curTime = format1.format(date);
+        curTimeArr=curTime.split("-");
+
+        mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+            Log.d("CURRENTLOC",dataSnapshot.toString());
+                if (dataSnapshot.getChildren() != null) {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        listItem.add("할일:" + child.getValue(Todo.class).name + ", 걸리는 시간:" + String.valueOf(child.getValue(Todo.class).estimatedTime) + "시간" + ", 난이도:" + child.getValue(Todo.class).importance);
+                        adapter.notifyDataSetChanged();
+                    }
+                } else {
+                    Log.w("Database", "Value 없음");
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("Database", "Failed to read value.", error.toException());
+            }
+        });
+
+//유성
+        File file = new File("time.txt");
+
+        try{
+            FileInputStream fis = openFileInput("time");
+            byte[] buffer = new byte[fis.available()];
+            fis.read(buffer);
+            String timeString = new String(buffer, "UTF-8");
+            time=Double.parseDouble(timeString);
+            timerText.setText(getTimerText());
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+//
+
+}
 
 
     //assets파일에서 json파일을 읽어오는 함수
@@ -132,18 +189,17 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
-
     public void startStopTapped(View view) {
         if (timerStarted == false) {
             timerStarted = true;
             stopStartButton.setText("STOP");
             stopStartButton.setTextColor(ContextCompat.getColor(this, R.color.red));
-            startTimer();
+            startTimer(); // startTimer() 함수 호출
         } else {
             timerStarted = false;
             stopStartButton.setText("START");
             stopStartButton.setTextColor(ContextCompat.getColor(this, R.color.green));
-            timerTask.cancel();
+            timerTask.cancel(); // timerTask 중단
         }
     }
 
@@ -151,16 +207,26 @@ public class MainActivity extends AppCompatActivity {
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
+                runOnUiThread(new Runnable() { // runOnUiThread함수를 이용하여 작업 스레드에서 타이머 텍스트를 변경한다.
                     @Override
                     public void run() {
                         time++;
                         timerText.setText(getTimerText());
+
+                        // 파일에 시간 저장
+                        try{
+                            FileOutputStream fos = openFileOutput("time", Context.MODE_PRIVATE);
+                            fos.write(time.toString().getBytes());
+                            fos.close();
+                        }catch (IOException e){
+                            e.printStackTrace();
+                        }
+
                     }
                 });
             }
         };
-        timer.scheduleAtFixedRate(timerTask, 0, 1000);
+        timer.scheduleAtFixedRate(timerTask, 0, 1000); // 즉시 타이머를 구동하고 1000 밀리초 단위로 반복
     }
 
     private String getTimerText() {
@@ -171,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
 
         return formatTime(seconds, minutes, hours);
     }
+
 
     private String formatTime(int seconds, int minutes, int hours) {
         return String.format("%02d", hours) + " : " + String.format("%02d", minutes) + " : " + String.format("%02d", seconds);
