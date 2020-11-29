@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
 import android.os.Bundle;
@@ -24,6 +25,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -99,8 +103,24 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+//유성
+        File file = new File("time.txt");
 
-    }
+        try{
+            FileInputStream fis = openFileInput("time");
+            byte[] buffer = new byte[fis.available()];
+            fis.read(buffer);
+            String timeString = new String(buffer, "UTF-8");
+            time=Double.parseDouble(timeString);
+            timerText.setText(getTimerText());
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+//
+
+}
 
 
     //assets파일에서 json파일을 읽어오는 함수
@@ -169,18 +189,17 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
-
     public void startStopTapped(View view) {
         if (timerStarted == false) {
             timerStarted = true;
             stopStartButton.setText("STOP");
             stopStartButton.setTextColor(ContextCompat.getColor(this, R.color.red));
-            startTimer();
+            startTimer(); // startTimer() 함수 호출
         } else {
             timerStarted = false;
             stopStartButton.setText("START");
             stopStartButton.setTextColor(ContextCompat.getColor(this, R.color.green));
-            timerTask.cancel();
+            timerTask.cancel(); // timerTask 중단
         }
     }
 
@@ -188,16 +207,26 @@ public class MainActivity extends AppCompatActivity {
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() {
+                runOnUiThread(new Runnable() { // runOnUiThread함수를 이용하여 작업 스레드에서 타이머 텍스트를 변경한다.
                     @Override
                     public void run() {
                         time++;
                         timerText.setText(getTimerText());
+
+                        // 파일에 시간 저장
+                        try{
+                            FileOutputStream fos = openFileOutput("time", Context.MODE_PRIVATE);
+                            fos.write(time.toString().getBytes());
+                            fos.close();
+                        }catch (IOException e){
+                            e.printStackTrace();
+                        }
+
                     }
                 });
             }
         };
-        timer.scheduleAtFixedRate(timerTask, 0, 1000);
+        timer.scheduleAtFixedRate(timerTask, 0, 1000); // 즉시 타이머를 구동하고 1000 밀리초 단위로 반복
     }
 
     private String getTimerText() {
@@ -208,6 +237,7 @@ public class MainActivity extends AppCompatActivity {
 
         return formatTime(seconds, minutes, hours);
     }
+
 
     private String formatTime(int seconds, int minutes, int hours) {
         return String.format("%02d", hours) + " : " + String.format("%02d", minutes) + " : " + String.format("%02d", seconds);
