@@ -4,8 +4,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -24,6 +26,7 @@ import com.google.firebase.database.ValueEventListener;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,6 +35,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -117,11 +121,15 @@ public class MainActivity extends AppCompatActivity {
         } catch (IOException e){
             e.printStackTrace();
         }
-
 //
+    }
 
-}
 
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+        timerTask.cancel();
+    }
 
     //assets파일에서 json파일을 읽어오는 함수
     private String getJson() {
@@ -180,12 +188,30 @@ public class MainActivity extends AppCompatActivity {
 
         switch (btnId) {
             case R.id.status:
-                startActivity(intent_S);
+                if (timerStarted == true) {
+                    timerStarted = false;
+                    stopStartButton.setText("START");
+                    stopStartButton.setTextColor(ContextCompat.getColor(this, R.color.green));
+                    timerTask.cancel(); // timerTask 중단
+                    startActivity(intent_S);
+                }
+                else{
+                    startActivity(intent_S);
+                }
                 break;
             case R.id.home:
                 break;
             case R.id.planner:
-                startActivity(intent_P);
+                if (timerStarted == true) {
+                    timerStarted = false;
+                    stopStartButton.setText("START");
+                    stopStartButton.setTextColor(ContextCompat.getColor(this, R.color.green));
+                    timerTask.cancel(); // timerTask 중단
+                    startActivity(intent_P);
+                }
+                else{
+                    startActivity(intent_P);
+                }
                 break;
         }
     }
@@ -242,5 +268,6 @@ public class MainActivity extends AppCompatActivity {
     private String formatTime(int seconds, int minutes, int hours) {
         return String.format("%02d", hours) + " : " + String.format("%02d", minutes) + " : " + String.format("%02d", seconds);
     }
+
 
 }
