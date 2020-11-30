@@ -60,7 +60,7 @@ public class PlannerNote extends AppCompatActivity {
 
         String [] days=data.split("-");
         setTitle(data);
-        
+
         //db 가져오기
         mDatabase.child("datas").child(days[1]).child(days[2]).addListenerForSingleValueEvent(
                 new ValueEventListener () {

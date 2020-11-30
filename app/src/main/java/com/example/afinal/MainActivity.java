@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity {
     //명언
     TextView quote, author;
     AssetManager assetManager;
-    Quote quoteObj=new Quote();
+    Quote quoteObj = new Quote();
 
     //리스트뷰
     boolean timerStarted = false;
@@ -76,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
     private ListView m_oListView = null;
 
 
-
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,8 +85,8 @@ public class MainActivity extends AppCompatActivity {
         //quote
         quote = findViewById(R.id.quotes);
         author = findViewById(R.id.author);
-        assetManager =getResources().getAssets();
-        quoteObj.setQuote(quote, author,assetManager);
+        assetManager = getResources().getAssets();
+        quoteObj.setQuote(quote, author, assetManager);
 
 
         timerText = findViewById(R.id.timeText);
@@ -107,13 +106,13 @@ public class MainActivity extends AppCompatActivity {
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
         curTime = format1.format(date);
-        curTimeArr=curTime.split("-");
+        curTimeArr = curTime.split("-");
 
-        Log.d("Time",curTimeArr[1]+"-"+curTimeArr[2]);
+        Log.d("Time", curTimeArr[1] + "-" + curTimeArr[2]);
         mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-            Log.d("CURRENTLOC",dataSnapshot.toString());
+                Log.d("CURRENTLOC", dataSnapshot.toString());
                 if (dataSnapshot.getChildren() != null) {
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         //커스텀리스트뷰 동적으로 추가
@@ -124,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                         oData.add(oItem);
 
                         m_oListView = findViewById(R.id.listViewTodo);
-                        ListAdapter oAdapter = new ListAdapter(oData);
+                        CustomListAdapter oAdapter = new CustomListAdapter(oData);
                         m_oListView.setAdapter(oAdapter);
                         oAdapter.notifyDataSetChanged();
                     }
@@ -143,107 +142,23 @@ public class MainActivity extends AppCompatActivity {
 //유성
         File file = new File("time.txt");
 
-        try{
+        try {
             FileInputStream fis = openFileInput("time");
             byte[] buffer = new byte[fis.available()];
             fis.read(buffer);
             String timeString = new String(buffer, StandardCharsets.UTF_8);
-            time=Double.parseDouble(timeString);
+            time = Double.parseDouble(timeString);
             timerText.setText(getTimerText());
 
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
 
-}
+    }
 
 
     final ArrayList<ItemData> oData = new ArrayList<>();// 염재선 수정
-
-//커스텀리스트뷰 시작 재선
-    public class ItemData
-    {
-        public String todo;
-        public String times;
-        public String importance;
-    }
-    public class ListAdapter extends BaseAdapter
-    {
-        LayoutInflater inflater = null;
-        private ArrayList<ItemData> m_oData = null;
-        private int nListCnt = 0;
-
-        public ListAdapter(ArrayList<ItemData> _oData)
-        {
-            m_oData = _oData;
-            nListCnt = m_oData.size();
-        }
-
-
-        @Override
-        public int getCount()
-        {
-            Log.i("TAG", "getCount");
-            return nListCnt;
-        }
-
-        @Override
-        public Object getItem(int position)
-        {
-            return null;
-        }
-
-        @Override
-        public long getItemId(int position)
-        {
-            return 0;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent)
-        {
-            if (convertView == null)
-            {
-                final Context context = parent.getContext();
-                if (inflater == null)
-                {
-                    inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                }
-                convertView = inflater.inflate(R.layout.main_listview, parent, false);
-            }
-
-            TextView todo = convertView.findViewById(R.id.todo);
-            TextView time = convertView.findViewById(R.id.time);
-            TextView importance = convertView.findViewById(R.id.importance);
-
-            final Button startButton = convertView.findViewById(R.id.startstopbutton);
-
-
-            //리스트뷰의 타이머 클릭했을때 타이머시작 & stop 구현
-            startButton.setOnClickListener(new View.OnClickListener(){
-                @Override
-                public void onClick(View v){
-                    if (timerStarted == false) {
-                        timerStarted = true;
-                        startButton.setText("STOP");
-                        startTimer(); // startTimer() 함수 호출
-                    } else {
-                        timerStarted = false;
-                        startButton.setText("START");
-                        timerTask.cancel(); // timerTask 중단
-                    }
-                }
-            });
-
-            todo.setText(m_oData.get(position).todo);
-            time.setText(m_oData.get(position).times);
-            importance.setText(m_oData.get(position).importance);
-            return convertView;
-        }
-    }
-
-    //커스텀 리스트뷰 끝
 
 
     public void switchIntent(View v) {
@@ -277,7 +192,7 @@ public class MainActivity extends AppCompatActivity {
 //        }
 //    }
 
-    private void startTimer() {
+    public void startTimer() {
         timerTask = new TimerTask() {
             @Override
             public void run() {
@@ -288,11 +203,11 @@ public class MainActivity extends AppCompatActivity {
                         timerText.setText(getTimerText());
 
                         // 파일에 시간 저장
-                        try{
+                        try {
                             FileOutputStream fos = openFileOutput("time", Context.MODE_PRIVATE);
                             fos.write(time.toString().getBytes());
                             fos.close();
-                        }catch (IOException e){
+                        } catch (IOException e) {
                             e.printStackTrace();
                         }
 
@@ -311,6 +226,7 @@ public class MainActivity extends AppCompatActivity {
 
         return formatTime(seconds, minutes, hours);
     }
+
     private String formatTime(int seconds, int minutes, int hours) {
         return String.format("%02d", hours) + " : " + String.format("%02d", minutes) + " : " + String.format("%02d", seconds);
     }
