@@ -6,12 +6,9 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
@@ -21,8 +18,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 
 public class PlannerNote extends AppCompatActivity {
@@ -38,34 +33,36 @@ public class PlannerNote extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
+
+        Intent intent = getIntent();
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         listItem = new ArrayList<String>();
         adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, listItem);
-
         list = findViewById(R.id.list);
         list.setAdapter(adapter);
+        //list.setOnItemClickListener();    //listItem 클릭시 실행되는 함수 MoreInfo로 가야함
 
-        //list.setOnItemClickListener();
+        addBtn = findViewById(R.id.button);
 
-        Intent intent = getIntent();
-        final String data = intent.getStringExtra("ID"); // 선택한 년도 월 일임. - 이걸 파일처리를 이용할것
-
-        String [] days=data.split("-");
+        final String data = intent.getStringExtra("ID"); // 선택한 년도 월 일임.
+        String [] days=data.split("-");     // "-" 로 년 월 일 구분
         setTitle(data);
 
         Log.d("day",days[1]);
         Log.d("day",days[2]);
 
-        //db 가져오기
+        //DB경로에 있는 모든 자식들 가져오기
         mDatabase.child("datas").child(days[1]).child(days[2]).addListenerForSingleValueEvent(
-
                 new ValueEventListener () {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        for(DataSnapshot child:dataSnapshot.getChildren()){
-                            listItem.add("할일:"+child.getValue(Todo.class).name+", 걸리는 시간:"+String.valueOf(child.getValue(Todo.class).estimatedTime)+"시간"+", 난이도:"+child.getValue(Todo.class).importance);
+                        if(dataSnapshot.getChildren()!=null){
+                        for(DataSnapshot child:dataSnapshot.getChildren()) {
+                            listItem.add("할일:" + child.getValue(Todo.class).name + ", 걸리는 시간:" + child.getValue(Todo.class).estimatedTime + "시간" + ", 난이도:" + child.getValue(Todo.class).importance);
                             adapter.notifyDataSetChanged();
+                            }
                         }
                     }
 
@@ -75,7 +72,8 @@ public class PlannerNote extends AppCompatActivity {
                     }
                 });
 
-        addBtn = findViewById(R.id.button);
+
+        //날짜 클릭 이벤트
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -91,22 +89,22 @@ public class PlannerNote extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+        //PlannerDetail Activity로 부터 id,month,day 값 가져옴
         String month = data.getStringExtra("month");
         String day = data.getStringExtra("day");
         String id = data.getStringExtra("id");
 
-
-        final DatabaseReference todo = mDatabase.child("datas").child(month).child(day).child(id);
+        DatabaseReference todo = mDatabase.child("datas").child(month).child(day).child(id);
 
         if (requestCode == GET_STRING) {
             if (resultCode == RESULT_OK) {
-                //값 받았으니 view에 값 설정
 
+                //값 받았으니 view에 값 설정
                 Log.d("database", "" + todo.child("name").toString());
                 todo.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        listItem.add("할일:"+snapshot.getValue(Todo.class).name+", 걸리는 시간:"+String.valueOf(snapshot.getValue(Todo.class).estimatedTime)+"시간"+", 난이도:"+snapshot.getValue(Todo.class).importance);
+                        listItem.add("할일:"+snapshot.getValue(Todo.class).name+", 걸리는 시간:"+ snapshot.getValue(Todo.class).estimatedTime +"시간"+", 난이도:"+snapshot.getValue(Todo.class).importance);
                         adapter.notifyDataSetChanged();
                     }
                     @Override
