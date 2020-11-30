@@ -106,6 +106,10 @@ public class PlannerDetailActivity extends AppCompatActivity {
             setResult(RESULT_OK, intent);
             this.finish();
         }
+        else if (v.getId() == R.id.back){
+            Intent i1 = new Intent(PlannerDetailActivity.this, PlannerNote.class);
+            startActivity(i1);
+        }
     }
 
     public void writeNewTodo(String _name, String _month, String _day, String _estimatedTime, String _importance, String _id) {
