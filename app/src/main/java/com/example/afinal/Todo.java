@@ -32,7 +32,6 @@ public class Todo {
         this.id = _id;
     }
 
-    //맵 형식으로 데이터 저장
     @Exclude
     public Map<String, Object> toMap() {
         HashMap<String, Object> result = new HashMap<>();

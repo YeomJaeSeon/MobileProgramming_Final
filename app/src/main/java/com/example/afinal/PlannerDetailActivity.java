@@ -43,9 +43,9 @@ public class PlannerDetailActivity extends AppCompatActivity {
 
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        radioButton = findViewById(R.id.radioButton);
-        radioButton1 = findViewById(R.id.radioButton1);
-        radioButton2 = findViewById(R.id.radioButton2);
+        radioButton = (RadioButton) findViewById(R.id.radioButton);
+        radioButton1 = (RadioButton) findViewById(R.id.radioButton1);
+        radioButton2 = (RadioButton) findViewById(R.id.radioButton2);
         radioButton.setOnClickListener(radioButtonClickListener);
         radioButton1.setOnClickListener(radioButtonClickListener);
         radioButton2.setOnClickListener(radioButtonClickListener);
@@ -74,7 +74,6 @@ public class PlannerDetailActivity extends AppCompatActivity {
         }
     };
 
-    //추가버튼 클릭 이벤트
     public void click(View v) {
         if (v.getId() == R.id.add) {
             todo = inputTodo.getText().toString();
@@ -85,8 +84,6 @@ public class PlannerDetailActivity extends AppCompatActivity {
                 System.out.println("not a number" + ex);
             }
             Log.i("Tag", todo + month + day + estimatedTime + importance);
-
-            //데이터 비었을때 오류처리
             if (todo.getBytes().length <= 0) {
                 Toast.makeText(this, "할일 입력해주세요..", Toast.LENGTH_SHORT).show();
                 return;
@@ -102,13 +99,12 @@ public class PlannerDetailActivity extends AppCompatActivity {
             writeNewTodo(todo, month, day, estimatedTime, importance, id);
 
             //DB접근 될때
-            intent.putExtra("id", id);
+            intent.putExtra("id", id.toString());
             intent.putExtra("month", String.valueOf(month));
             intent.putExtra("day", String.valueOf(day));
 
             setResult(RESULT_OK, intent);
             this.finish();
-
         }
         else if (v.getId() == R.id.back){
             Intent i1 = new Intent(PlannerDetailActivity.this, PlannerNote.class);
@@ -116,8 +112,6 @@ public class PlannerDetailActivity extends AppCompatActivity {
         }
     }
 
-
-    //새로운 Todo 추가
     public void writeNewTodo(String _name, String _month, String _day, String _estimatedTime, String _importance, String _id) {
 
         HashMap<String, Object> childUpdates = new HashMap<>();
