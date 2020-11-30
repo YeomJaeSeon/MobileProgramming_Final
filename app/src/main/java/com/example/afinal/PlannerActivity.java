@@ -10,38 +10,39 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class PlannerActivity extends AppCompatActivity {
-
+    String yearId;
+    Intent i;
+    CalendarView calendarView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_planner);
 
-        CalendarView calendarView = (CalendarView) findViewById(R.id.calendarView);
+        calendarView = findViewById(R.id.calendarView);
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
 
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
                 month++;
                 Toast.makeText(PlannerActivity.this, year+":"+month+":"+dayOfMonth, Toast.LENGTH_SHORT).show();
-                Intent i = new Intent(PlannerActivity.this, PlannerNote.class);
-                String yearId = year+"-"+month+"-"+dayOfMonth;
-
+                i = new Intent(PlannerActivity.this, PlannerNote.class);
+                yearId = year+"-"+month+"-"+dayOfMonth;
                 i.putExtra("ID", yearId);
                 startActivity(i);
             }
         });
     }
     public void click(View v){
-        Intent intent_H = new Intent(PlannerActivity.this, MainActivity.class);
-        Intent intent_S = new Intent(PlannerActivity.this, StatisticsActivity.class);
+        Intent intentMain = new Intent(PlannerActivity.this, MainActivity.class);
+        Intent intentStatistics = new Intent(PlannerActivity.this, StatisticsActivity.class);
         int btnId = v.getId();
 
         switch(btnId){
             case R.id.status:
-                startActivity(intent_S);
+                startActivity(intentStatistics);
                 break;
             case R.id.home:
-                startActivity(intent_H);
+                startActivity(intentMain);
                 break;
             case R.id.planner:
                 break;

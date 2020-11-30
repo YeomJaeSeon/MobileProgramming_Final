@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -21,8 +22,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+
 
 
 public class PlannerNote extends AppCompatActivity {
@@ -46,7 +46,13 @@ public class PlannerNote extends AppCompatActivity {
         list = findViewById(R.id.list);
         list.setAdapter(adapter);
 
-        //list.setOnItemClickListener();
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                adapter.getItem(i);
+
+            }
+        });
 
 
         Intent intent = getIntent();
@@ -60,12 +66,11 @@ public class PlannerNote extends AppCompatActivity {
 
         //db 가져오기
         mDatabase.child("datas").child(days[1]).child(days[2]).addListenerForSingleValueEvent(
-
                 new ValueEventListener () {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         for(DataSnapshot child:dataSnapshot.getChildren()){
-                            listItem.add("할일:"+child.getValue(Todo.class).name+", 걸리는 시간:"+String.valueOf(child.getValue(Todo.class).estimatedTime)+"시간"+", 난이도:"+child.getValue(Todo.class).importance);
+                            listItem.add("할일:"+child.getValue(Todo.class).name+", 걸리는 시간:"+ child.getValue(Todo.class).estimatedTime +"시간"+", 난이도:"+child.getValue(Todo.class).importance);
                             adapter.notifyDataSetChanged();
                         }
                     }
@@ -97,7 +102,6 @@ public class PlannerNote extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-
         String month = data.getStringExtra("month");
         String day = data.getStringExtra("day");
         String id = data.getStringExtra("id");
@@ -112,7 +116,7 @@ public class PlannerNote extends AppCompatActivity {
                 todo.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        listItem.add("할일:"+snapshot.getValue(Todo.class).name+", 걸리는 시간:"+String.valueOf(snapshot.getValue(Todo.class).estimatedTime)+"시간"+", 중요도:"+snapshot.getValue(Todo.class).importance);
+                        listItem.add("할일:"+snapshot.getValue(Todo.class).name+", 걸리는 시간:"+ snapshot.getValue(Todo.class).estimatedTime +"시간"+", 중요도:"+snapshot.getValue(Todo.class).importance);
                         adapter.notifyDataSetChanged();
                     }
                     @Override

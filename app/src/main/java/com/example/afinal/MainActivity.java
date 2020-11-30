@@ -1,5 +1,6 @@
 package com.example.afinal;
 
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -7,6 +8,7 @@ import androidx.core.content.ContextCompat;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -34,6 +36,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,16 +49,22 @@ public class MainActivity extends AppCompatActivity {
     Button addBtn;
     TextView timerText;
     //메인타이머버튼임
-//    Button stopStartButton;
-Button newStartButton;
+    //Button stopStartButton;
+    Button newStartButton;
     Timer timer;
     TimerTask timerTask;
     Double time = 0.0;
+    //현재시간
     String curTime;
     String[] curTimeArr;
-    TextView quote, author;
-    boolean timerStarted = false;
 
+    //명언
+    TextView quote, author;
+    AssetManager assetManager;
+    Quote quoteObj=new Quote();
+
+    //리스트뷰
+    boolean timerStarted = false;
     ArrayAdapter<String> adapter;
     ArrayList<String> listItem;
     ListView listView;
@@ -68,19 +77,22 @@ Button newStartButton;
 
 
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        //quote
         quote = findViewById(R.id.quotes);
         author = findViewById(R.id.author);
-        setQuote(quote, author);
+        assetManager =getResources().getAssets();
+        quoteObj.setQuote(quote, author,assetManager);
 
-        timerText = (TextView) findViewById(R.id.timeText);
+
+        timerText = findViewById(R.id.timeText);
         //메인타이머 버튼임
-//        stopStartButton = (Button) findViewById(R.id.startstopbutton);
+        //stopStartButton = (Button) findViewById(R.id.startstopbutton);
         timer = new Timer();
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -91,12 +103,12 @@ Button newStartButton;
         listView = findViewById(R.id.listViewTodo);
         listView.setAdapter(adapter);
 
+
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
         curTime = format1.format(date);
         curTimeArr=curTime.split("-");
 
-        final ArrayList<ItemData> oData = new ArrayList<>();// 염재선 수정
 
         mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).addValueEventListener(new ValueEventListener() {
             @Override
@@ -112,7 +124,7 @@ Button newStartButton;
                         oItem.importance = child.getValue(Todo.class).importance;
                         oData.add(oItem);
 
-                        m_oListView = (ListView)findViewById(R.id.listViewTodo);
+                        m_oListView = findViewById(R.id.listViewTodo);
                         ListAdapter oAdapter = new ListAdapter(oData);
                         m_oListView.setAdapter(oAdapter);
                     }
@@ -135,7 +147,7 @@ Button newStartButton;
             FileInputStream fis = openFileInput("time");
             byte[] buffer = new byte[fis.available()];
             fis.read(buffer);
-            String timeString = new String(buffer, "UTF-8");
+            String timeString = new String(buffer, StandardCharsets.UTF_8);
             time=Double.parseDouble(timeString);
             timerText.setText(getTimerText());
 
@@ -146,7 +158,10 @@ Button newStartButton;
 
 }
 
-//커스텀리스트뷰 시작
+
+    final ArrayList<ItemData> oData = new ArrayList<>();// 염재선 수정
+
+//커스텀리스트뷰 시작 재선
     public class ItemData
     {
         public String todo;
@@ -164,6 +179,7 @@ Button newStartButton;
             m_oData = _oData;
             nListCnt = m_oData.size();
         }
+
 
         @Override
         public int getCount()
@@ -197,11 +213,11 @@ Button newStartButton;
                 convertView = inflater.inflate(R.layout.main_listview, parent, false);
             }
 
-            TextView todo = (TextView) convertView.findViewById(R.id.todo);
-            TextView time = (TextView) convertView.findViewById(R.id.time);
-            TextView importance = (TextView) convertView.findViewById(R.id.importance);
+            TextView todo = convertView.findViewById(R.id.todo);
+            TextView time = convertView.findViewById(R.id.time);
+            TextView importance = convertView.findViewById(R.id.importance);
 
-            final Button startButton = (Button)convertView.findViewById(R.id.startstopbutton);
+            final Button startButton = convertView.findViewById(R.id.startstopbutton);
 
 
             //리스트뷰의 타이머 클릭했을때 타이머시작 & stop 구현
@@ -229,57 +245,6 @@ Button newStartButton;
 
     //커스텀 리스트뷰 끝
 
-
-
-    //assets파일에서 json파일을 읽어오는 함수
-    private String getJson() {
-
-        String data = null;
-        AssetManager assetManager = getAssets();
-
-
-        try {
-            InputStream is = assetManager.open("quotes.json");
-            int size = is.available();
-
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            data = new String(buffer, "UTF-8");
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-        return data;
-    }
-
-    //읽어온 json 파일을 string파일로 변환시켜 textView에 setText하는 함수
-    private void setQuote(TextView quote, TextView author) {
-        JSONObject obj, content;
-        JSONArray jsonArray;
-        String quotes, title, subtitle;
-        try {
-            //json파일을 읽어와 JSONObject 파일로 변환
-            obj = new JSONObject(getJson());
-            //변환한 JSONObject에서 quotes key를 가진 값들을  string으로 변환한 뒤 quotes에 저장
-            quotes = obj.getString("quotes");
-            //quotes를 JSONArray 타입으로 변환
-            jsonArray = new JSONArray(quotes);
-
-            //랜덤값을 rand에 저장
-            int rand = (int) (Math.random() * jsonArray.length());
-            //JSONArray에서 랜덤값이 위치한 index를 추출하여 JSONObject로 변환
-            content = jsonArray.getJSONObject(rand);
-            //JSONObject title에 값 저장
-            title = content.getString("quote");  //title은 json파일의 quote임
-            subtitle = content.getString("author"); //subtitle은 json파일의 author임
-            //View에 텍스트 지정
-            quote.setText(title);
-            author.setText("- " + subtitle + " -");
-
-        } catch (JSONException ex) {
-            ex.printStackTrace();
-        }
-    }
 
     public void switchIntent(View v) {
         Intent intent_S = new Intent(MainActivity.this, StatisticsActivity.class);
@@ -346,8 +311,6 @@ Button newStartButton;
 
         return formatTime(seconds, minutes, hours);
     }
-
-
     private String formatTime(int seconds, int minutes, int hours) {
         return String.format("%02d", hours) + " : " + String.format("%02d", minutes) + " : " + String.format("%02d", seconds);
     }

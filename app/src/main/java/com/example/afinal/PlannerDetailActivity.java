@@ -43,9 +43,9 @@ public class PlannerDetailActivity extends AppCompatActivity {
 
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        radioButton = (RadioButton) findViewById(R.id.radioButton);
-        radioButton1 = (RadioButton) findViewById(R.id.radioButton1);
-        radioButton2 = (RadioButton) findViewById(R.id.radioButton2);
+        radioButton = findViewById(R.id.radioButton);
+        radioButton1 = findViewById(R.id.radioButton1);
+        radioButton2 = findViewById(R.id.radioButton2);
         radioButton.setOnClickListener(radioButtonClickListener);
         radioButton1.setOnClickListener(radioButtonClickListener);
         radioButton2.setOnClickListener(radioButtonClickListener);
@@ -99,7 +99,7 @@ public class PlannerDetailActivity extends AppCompatActivity {
             writeNewTodo(todo, month, day, estimatedTime, importance, id);
 
             //DB접근 될때
-            intent.putExtra("id", id.toString());
+            intent.putExtra("id", id);
             intent.putExtra("month", String.valueOf(month));
             intent.putExtra("day", String.valueOf(day));
 

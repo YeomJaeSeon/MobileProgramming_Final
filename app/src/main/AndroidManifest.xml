@@ -31,6 +31,7 @@
             android:name=".PlannerNote"
             android:label="Note"
             ></activity>
+
         <activity
             android:name=".PlannerDetailActivity"
             android:label="Detail"
