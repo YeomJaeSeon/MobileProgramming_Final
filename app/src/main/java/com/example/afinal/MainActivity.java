@@ -109,14 +109,13 @@ public class MainActivity extends AppCompatActivity {
         curTime = format1.format(date);
         curTimeArr=curTime.split("-");
 
-
+        Log.d("Time",curTimeArr[1]+"-"+curTimeArr[2]);
         mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
             Log.d("CURRENTLOC",dataSnapshot.toString());
                 if (dataSnapshot.getChildren() != null) {
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
-
                         //커스텀리스트뷰 동적으로 추가
                         ItemData oItem = new ItemData();
                         oItem.todo = child.getValue(Todo.class).name;
@@ -127,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
                         m_oListView = findViewById(R.id.listViewTodo);
                         ListAdapter oAdapter = new ListAdapter(oData);
                         m_oListView.setAdapter(oAdapter);
+                        oAdapter.notifyDataSetChanged();
                     }
                 } else {
                     Log.w("Database", "Value 없음");

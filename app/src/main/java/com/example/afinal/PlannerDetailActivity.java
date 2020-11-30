@@ -118,6 +118,8 @@ public class PlannerDetailActivity extends AppCompatActivity {
 
     public void writeNewTodo(String _name, String _month, String _day, String _estimatedTime, String _importance, String _id) {
 
+
+
         HashMap<String, Object> childUpdates = new HashMap<>();
         Todo todo = new Todo(_name, _month, _day, _estimatedTime, _importance, _id);
         Map<String, Object> todoData = todo.toMap();

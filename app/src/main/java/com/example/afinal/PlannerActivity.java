@@ -21,12 +21,19 @@ public class PlannerActivity extends AppCompatActivity {
         calendarView = findViewById(R.id.calendarView);
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
 
+
+
+
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
+
                 month++;
-                Toast.makeText(PlannerActivity.this, year+":"+month+":"+dayOfMonth, Toast.LENGTH_SHORT).show();
+                String formattedDay = String.format("%02d", dayOfMonth);
+                String formattedMonth = String.format("%02d",month);
+
+                Toast.makeText(PlannerActivity.this, year+":"+formattedMonth+":"+formattedDay, Toast.LENGTH_SHORT).show();
                 i = new Intent(PlannerActivity.this, PlannerNote.class);
-                yearId = year+"-"+month+"-"+dayOfMonth;
+                yearId = year+"-"+formattedMonth+"-"+formattedDay;
                 i.putExtra("ID", yearId);
                 startActivity(i);
             }
