@@ -32,7 +32,6 @@ public class PlannerNote extends AppCompatActivity {
     ArrayAdapter<String> adapter;
     ArrayList<String> listItem;
     Button addBtn;
-    Button backBtn;
 
     private DatabaseReference mDatabase;
 
@@ -85,15 +84,6 @@ public class PlannerNote extends AppCompatActivity {
                 startActivityForResult(goDetail, GET_STRING);
             }
         });
-
-        backBtn = findViewById(R.id.back);
-        backBtn.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                finish();
-            }
-        });
-
     }
 
 
