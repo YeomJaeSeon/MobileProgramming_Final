@@ -106,9 +106,13 @@ public class PlannerDetailActivity extends AppCompatActivity {
             setResult(RESULT_OK, intent);
             this.finish();
         }
-        else if (v.getId() == R.id.back){
-            Intent i1 = new Intent(PlannerDetailActivity.this, PlannerNote.class);
-            startActivity(i1);
+        else if (v.getId() == R.id.goback){
+            intent.putExtra("id", "goBack");
+            intent.putExtra("month", "goBack");
+            intent.putExtra("day", "goBack");
+
+            setResult(RESULT_CANCELED, intent);
+            this.finish();
         }
     }
 

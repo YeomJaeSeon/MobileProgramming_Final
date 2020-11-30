@@ -7,33 +7,37 @@
     tools:context=".MainActivity">
 
     <!-- 맨위 툴바 Timer, Start Btn   -->
+
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/timerToolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/grey"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
 
         <TextView
             android:id="@+id/timeText"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="start"
             android:text="00:00"
-            android:textSize="@dimen/large_font_size" />
+            android:textSize="@dimen/large_font_size"
+            android:gravity="center_horizontal"
+            tools:layout_editor_absoluteX="16dp" />
 
-        <Button
-            android:id="@+id/startstopbutton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            android:onClick="startStopTapped"
-            android:text="START"
-            android:textColor="@color/green"
-            android:textSize="@dimen/default_font_size" />
+        //메인버튼 삭제
+        <!--        <Button-->
+        <!--            android:id="@+id/startstopbutton"-->
+        <!--            android:layout_width="wrap_content"-->
+        <!--            android:layout_height="wrap_content"-->
+        <!--            android:layout_gravity="end"-->
+        <!--            android:onClick="startStopTapped"-->
+        <!--            android:text="START"-->
+        <!--            android:textColor="@color/green"-->
+        <!--            android:textSize="@dimen/default_font_size" />-->
     </androidx.appcompat.widget.Toolbar>
 
     <ListView

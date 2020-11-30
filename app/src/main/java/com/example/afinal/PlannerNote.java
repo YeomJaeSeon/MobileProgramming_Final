@@ -86,16 +86,21 @@ public class PlannerNote extends AppCompatActivity {
             }
         });
     }
+    public void back(View v){
+        if(v.getId() == R.id.back){
+            this.finish();
+        }
+    }
 
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+
         String month = data.getStringExtra("month");
         String day = data.getStringExtra("day");
         String id = data.getStringExtra("id");
-
 
         final DatabaseReference todo = mDatabase.child("datas").child(month).child(day).child(id);
 
@@ -107,7 +112,7 @@ public class PlannerNote extends AppCompatActivity {
                 todo.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        listItem.add("할일:"+snapshot.getValue(Todo.class).name+", 걸리는 시간:"+String.valueOf(snapshot.getValue(Todo.class).estimatedTime)+"시간"+", 난이도:"+snapshot.getValue(Todo.class).importance);
+                        listItem.add("할일:"+snapshot.getValue(Todo.class).name+", 걸리는 시간:"+String.valueOf(snapshot.getValue(Todo.class).estimatedTime)+"시간"+", 중요도:"+snapshot.getValue(Todo.class).importance);
                         adapter.notifyDataSetChanged();
                     }
                     @Override
