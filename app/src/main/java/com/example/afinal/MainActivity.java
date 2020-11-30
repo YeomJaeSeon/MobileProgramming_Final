@@ -1,6 +1,5 @@
 package com.example.afinal;
 
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
@@ -10,7 +9,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.AssetManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -35,7 +33,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -65,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
     private DatabaseReference mDatabase;
 
 
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,8 +70,8 @@ public class MainActivity extends AppCompatActivity {
         author = findViewById(R.id.author);
         setQuote(quote, author);
 
-        timerText = findViewById(R.id.timeText);
-        stopStartButton = findViewById(R.id.startstopbutton);
+        timerText = (TextView) findViewById(R.id.timeText);
+        stopStartButton = (Button) findViewById(R.id.startstopbutton);
         timer = new Timer();
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -85,25 +81,18 @@ public class MainActivity extends AppCompatActivity {
         listView = findViewById(R.id.listViewTodo);
         listView.setAdapter(adapter);
 
-        //현재 날짜 출력하는 로직
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
-        curTime = format1.format(date);  //날짜 포맷
+        curTime = format1.format(date);
         curTimeArr=curTime.split("-");
 
-        //설정한 데이터베이스 경로로 부터 데이터 받아옴 DB에 datas/월/일/정보들 ㅎ 순으로 저장되있음
         mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).addValueEventListener(new ValueEventListener() {
-
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
             Log.d("CURRENTLOC",dataSnapshot.toString());
-
                 if (dataSnapshot.getChildren() != null) {
-                    //DB 경로에 모든 자식들의 정보 listItem에 추가
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
-                        listItem.add("할일:" + child.getValue(Todo.class).name + ", 걸리는 시간:" + child.getValue(Todo.class).estimatedTime + "시간" + ", 난이도:" + child.getValue(Todo.class).importance);
-
-                        //변경사항 어뎁터에 알려줌
+                        listItem.add("할일:" + child.getValue(Todo.class).name + ", 걸리는 시간:" + String.valueOf(child.getValue(Todo.class).estimatedTime) + "시간" + ", 난이도:" + child.getValue(Todo.class).importance);
                         adapter.notifyDataSetChanged();
                     }
                 } else {
@@ -113,17 +102,19 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(DatabaseError error) {
+                // Failed to read value
                 Log.w("Database", "Failed to read value.", error.toException());
             }
         });
 
 //유성
         File file = new File("time.txt");
+
         try{
             FileInputStream fis = openFileInput("time");
             byte[] buffer = new byte[fis.available()];
             fis.read(buffer);
-            String timeString = new String(buffer, StandardCharsets.UTF_8);
+            String timeString = new String(buffer, "UTF-8");
             time=Double.parseDouble(timeString);
             timerText.setText(getTimerText());
 
@@ -146,6 +137,7 @@ public class MainActivity extends AppCompatActivity {
         String data = null;
         AssetManager assetManager = getAssets();
 
+
         try {
             InputStream is = assetManager.open("quotes.json");
             int size = is.available();
@@ -153,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
             byte[] buffer = new byte[size];
             is.read(buffer);
             is.close();
-            data = new String(buffer, StandardCharsets.UTF_8);
+            data = new String(buffer, "UTF-8");
         } catch (IOException ex) {
             ex.printStackTrace();
         }

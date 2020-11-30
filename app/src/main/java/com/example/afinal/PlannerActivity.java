@@ -16,7 +16,7 @@ public class PlannerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_planner);
 
-        CalendarView calendarView = findViewById(R.id.calendarView);
+        CalendarView calendarView = (CalendarView) findViewById(R.id.calendarView);
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
 
             @Override
