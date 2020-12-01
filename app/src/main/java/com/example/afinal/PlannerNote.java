@@ -3,16 +3,17 @@ package com.example.afinal;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
@@ -24,7 +25,6 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 
-
 public class PlannerNote extends AppCompatActivity {
 
     final int GET_STRING = 1;
@@ -32,12 +32,57 @@ public class PlannerNote extends AppCompatActivity {
     ArrayAdapter<String> adapter;
     ArrayList<String> listItem;
     Button addBtn;
-
+    String[] days;
+    String [] listItemId=new String[5];
     private DatabaseReference mDatabase;
+
+
+
+    public void removeTodo(String month,String day,String id){
+        mDatabase.child("datas").child(month).child(day).child(id).removeValue();
+    }
+    //컨텍스트
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        menu.setHeaderTitle("수정 혹은 삭제");
+        menu.add(0, 1, 0, "수정");
+        menu.add(0, 2, 0, "삭제");
+
+
+    }
+
+    @Override
+    public boolean onContextItemSelected(@NonNull MenuItem item) {
+
+        AdapterView.AdapterContextMenuInfo itemId = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+
+        switch (item.getItemId()) {
+            //수정
+            case 1:
+                Intent intent=new Intent(PlannerNote.this,PlannerModifyActivity.class);
+                //PlannerModifyActivity에 수정 레이아웃 작성하면됨
+                intent.putExtra("id",listItemId[itemId.position]);
+                //수정화면에서 intent.getStringExtra("id"); 해서 이 아이디값 가져오자
+                startActivity(intent);
+                return true;
+            //삭제
+            case 2:
+                adapter.remove(adapter.getItem(itemId.position));
+                removeTodo(days[1],days[2],listItemId[itemId.position]);
+                adapter.notifyDataSetChanged();
+                return true;
+            default:
+                return super.onContextItemSelected(item);
+        }
+    }
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_note);
+
+
+
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
         listItem = new ArrayList<String>();
@@ -46,36 +91,39 @@ public class PlannerNote extends AppCompatActivity {
         list = findViewById(R.id.list);
         list.setAdapter(adapter);
 
-        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        //컨텍스트 메뉴 등록
+        registerForContextMenu(list);
+        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                adapter.getItem(i);
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Log.d("SELE",String.valueOf(i));
 
+                return false;
             }
         });
 
 
         Intent intent = getIntent();
         final String data = intent.getStringExtra("ID"); // 선택한 년도 월 일임. - 이걸 파일처리를 이용할것
-
-
-        String [] days=data.split("-");
+        days = data.split("-");
         setTitle(data);
-        
+
         //db 가져오기
         mDatabase.child("datas").child(days[1]).child(days[2]).addListenerForSingleValueEvent(
-                new ValueEventListener () {
+                new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        for(DataSnapshot child:dataSnapshot.getChildren()){
-                            listItem.add("할일:"+child.getValue(Todo.class).name+", 걸리는 시간:"+ child.getValue(Todo.class).estimatedTime +"시간"+", 난이도:"+child.getValue(Todo.class).importance);
-                            adapter.notifyDataSetChanged();
+                        int i=0;
+                        for (DataSnapshot child : dataSnapshot.getChildren()) {
+                            listItem.add("할일:" + child.getValue(Todo.class).name + ", 걸리는 시간:" + child.getValue(Todo.class).estimatedTime + "시간" + ", 난이도:" + child.getValue(Todo.class).importance);
+                            listItemId[i++]=child.getKey();
                         }
+                        adapter.notifyDataSetChanged();
                     }
 
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
-                        Log.e("database","Wring Url");
+                        Log.e("database", "Wring Url");
                     }
                 });
 
@@ -89,8 +137,9 @@ public class PlannerNote extends AppCompatActivity {
             }
         });
     }
-    public void back(View v){
-        if(v.getId() == R.id.back){
+
+    public void back(View v) {
+        if (v.getId() == R.id.back) {
             this.finish();
         }
     }
@@ -114,9 +163,10 @@ public class PlannerNote extends AppCompatActivity {
                 todo.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot snapshot) {
-                        listItem.add("할일:"+snapshot.getValue(Todo.class).name+", 걸리는 시간:"+ snapshot.getValue(Todo.class).estimatedTime +"시간"+", 중요도:"+snapshot.getValue(Todo.class).importance);
+                        listItem.add("할일:" + snapshot.getValue(Todo.class).name + ", 걸리는 시간:" + snapshot.getValue(Todo.class).estimatedTime + "시간" + ", 중요도:" + snapshot.getValue(Todo.class).importance);
                         adapter.notifyDataSetChanged();
                     }
+
                     @Override
                     public void onCancelled(@NonNull DatabaseError error) {
                     }
