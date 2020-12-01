@@ -37,14 +37,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         ></CalendarView>
+
     <LinearLayout
-        android:layout_marginBottom="@dimen/viewMarginMedium"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:layout_width="match_parent">
+        app:layout_constraintStart_toStartOf="parent">
 
         <Button
             android:id="@+id/status"
