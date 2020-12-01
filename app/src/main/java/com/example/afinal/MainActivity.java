@@ -155,8 +155,7 @@ public class MainActivity extends AppCompatActivity {
             e.printStackTrace();
         }
 
-
-}
+    }
 
 
     final ArrayList<ItemData> oData = new ArrayList<>();// 염재선 수정
