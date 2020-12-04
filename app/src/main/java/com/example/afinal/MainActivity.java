@@ -36,7 +36,7 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
 
     Button addBtn;
-    TextView timerText;
+    TextView timerText; // 홈 화면 총 공부시간
     //메인타이머버튼임
     //Button stopStartButton;
     Button newStartButton;
@@ -77,12 +77,6 @@ public class MainActivity extends AppCompatActivity {
         author = findViewById(R.id.author);
         assetManager = getResources().getAssets();
         quoteObj.setQuote(quote, author, assetManager);
-
-
-        timerText = findViewById(R.id.timeText);
-        //메인타이머 버튼임
-        //stopStartButton = (Button) findViewById(R.id.startstopbutton);
-        timer = new Timer();
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
@@ -130,15 +124,19 @@ public class MainActivity extends AppCompatActivity {
         });
 
 //유성
-        File file = new File("time.txt");
+
+        timerText = findViewById(R.id.timeText);
+        //메인타이머 버튼임
+        //stopStartButton = (Button) findViewById(R.id.startstopbutton);
+        timer = new Timer(); // timer 객체 생성
 
         try {
-            FileInputStream fis = openFileInput("time");
-            byte[] buffer = new byte[fis.available()];
-            fis.read(buffer);
-            String timeString = new String(buffer, StandardCharsets.UTF_8);
-            time = Double.parseDouble(timeString);
-            timerText.setText(getTimerText());
+            FileInputStream fis = openFileInput("time"); // 총 공부 시간을 저장할 "time" 내부 파일 열기
+            byte[] buffer = new byte[fis.available()]; // 파일에 값을 읽을 byte형 변수 buffer 생성
+            fis.read(buffer); // 파일이 끝날 때 까지 읽음
+            String timeString = new String(buffer, StandardCharsets.UTF_8); // 파일에 저장된 총 공부 시간을 byte형에서 String형으로 형변환
+            time = Double.parseDouble(timeString); // 총 공부 시간을 String형에서 Double형으로 형변환
+            timerText.setText(getTimerText()); // timertext에 총 공부 시간 display
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -149,6 +147,7 @@ public class MainActivity extends AppCompatActivity {
     final ArrayList<ItemData> oData = new ArrayList<>();// 염재선 수정
 
 
+    // 하단 버튼(통계 / 홈 / 플래너) 클릭 시 각 액티비티로 이동하는 메소드
     public void switchIntent(View v) {
         Intent intent_S = new Intent(MainActivity.this, StatisticsActivity.class);
         Intent intent_P = new Intent(MainActivity.this, PlannerActivity.class);
@@ -181,14 +180,16 @@ public class MainActivity extends AppCompatActivity {
 //    }
 
     public void startTimer() {
+        // timerTask 객체 생성
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                runOnUiThread(new Runnable() { // runOnUiThread함수를 이용하여 작업 스레드에서 타이머 텍스트를 변경한다.
+                // runOnUiThread함수를 이용하여 작업 스레드에서 타이머 텍스트를 변경한다.
+                runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        time++;
-                        timerText.setText(getTimerText());
+                        time++; // 시간을 1증가 시킴
+                        timerText.setText(getTimerText()); // 시간 갱신
 
                         // 파일에 시간 저장
                         try {
@@ -206,11 +207,12 @@ public class MainActivity extends AppCompatActivity {
         timer.scheduleAtFixedRate(timerTask, 0, 1000); // 즉시 타이머를 구동하고 1000 밀리초 단위로 반복
     }
 
+    // 초 단위로 되어있는 시간 값을 (시간 : 분 : 초) 형식으로 만드는 메소드
     private String getTimerText() {
-        int rounded = (int) Math.round(time);
-        int seconds = ((rounded % 86400) % 3600) % 60;
-        int minutes = ((rounded % 86400) % 3600) / 60;
-        int hours = ((rounded % 86400) / 3600);
+        int rounded = (int) Math.round(time); // double형인 변수 time을 int형으로 형변환
+        int seconds = ((rounded % 86400) % 3600) % 60; // 초
+        int minutes = ((rounded % 86400) % 3600) / 60; // 분
+        int hours = ((rounded % 86400) / 3600); // 시간
 
         return formatTime(seconds, minutes, hours);
     }
