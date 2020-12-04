@@ -9,6 +9,11 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <receiver
+            android:name=".MyReceiver"
+            android:enabled="true"
+            android:exported="true"></receiver>
+
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -16,27 +21,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".PlannerActivity"
-            android:label="Planner"
-            ></activity>
-
+            android:label="Planner" />
         <activity
-        android:name=".StatisticsActivity"
-        android:label="Statistics"
-        ></activity>
-
+            android:name=".StatisticsActivity"
+            android:label="Statistics" />
         <activity
             android:name=".PlannerNote"
-            android:label="Note"
-            ></activity>
-
+            android:label="Note" />
         <activity
             android:name=".PlannerDetailActivity"
-            android:label="Detail"
-            ></activity>
-
+            android:label="Detail" />
     </application>
 
 </manifest>

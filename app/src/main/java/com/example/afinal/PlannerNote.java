@@ -11,6 +11,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -45,9 +46,10 @@ public class PlannerNote extends AppCompatActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.setHeaderTitle("수정 혹은 삭제");
+        menu.setHeaderTitle("수정 or 삭제 or 알람 설정");
         menu.add(0, 1, 0, "수정");
         menu.add(0, 2, 0, "삭제");
+        menu.add(0, 3, 0, "알람 설정");
 
 
     }
@@ -71,6 +73,10 @@ public class PlannerNote extends AppCompatActivity {
                 adapter.remove(adapter.getItem(itemId.position));
                 removeTodo(days[1],days[2],listItemId[itemId.position]);
                 adapter.notifyDataSetChanged();
+                return true;
+            case 3:
+                TimePickerFragment timePickerFragment = new TimePickerFragment(); // 타임피커 객체 생성
+                timePickerFragment.show(getSupportFragmentManager(), "timePicker");
                 return true;
             default:
                 return super.onContextItemSelected(item);
