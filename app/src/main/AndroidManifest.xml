@@ -33,6 +33,9 @@
         <activity
             android:name=".PlannerDetailActivity"
             android:label="Detail" />
+        <activity
+            android:name=".PlannerModifyActivity"
+            android:label="Detail" />
     </application>
 
 </manifest>

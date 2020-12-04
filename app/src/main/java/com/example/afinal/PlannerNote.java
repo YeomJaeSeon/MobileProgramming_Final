@@ -29,6 +29,7 @@ import java.util.ArrayList;
 public class PlannerNote extends AppCompatActivity {
 
     final int GET_STRING = 1;
+    final int GET_STRING2 = 2;
     ListView list;
     ArrayAdapter<String> adapter;
     ArrayList<String> listItem;
@@ -66,7 +67,7 @@ public class PlannerNote extends AppCompatActivity {
                 //PlannerModifyActivity에 수정 레이아웃 작성하면됨
                 intent.putExtra("id",listItemId[itemId.position]);
                 //수정화면에서 intent.getStringExtra("id"); 해서 이 아이디값 가져오자
-                startActivity(intent);
+                startActivityForResult(intent, GET_STRING2);
                 return true;
             //삭제
             case 2:
