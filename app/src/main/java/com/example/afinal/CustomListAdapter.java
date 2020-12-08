@@ -36,7 +36,6 @@ public class CustomListAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        Log.i("TAG", "getCount");
         return nListCnt;
     }
 

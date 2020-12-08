@@ -32,6 +32,7 @@ mDatabase.child("경로").child("경로").addListenerForSingleValueEvent(
             public void onSuccess(Void aVoid) {
                 Log.d("Database", "데이터 저장 완료");
             }
+                //mDatabase.child("users").child(userId).child("username").setValue(name);
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {

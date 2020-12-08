@@ -1,5 +1,6 @@
 package com.example.afinal;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.AssetManager;
@@ -57,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     ArrayAdapter<String> adapter;
     ArrayList<String> listItem;
     ListView listView;
-
+    ProgressDialog progressDialog;
     //database 가져오기
     private DatabaseReference mDatabase;
 
@@ -71,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    mContext=this;
+        mContext=this;
         //quote
         quote = findViewById(R.id.quotes);
         author = findViewById(R.id.author);
@@ -80,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
         mDatabase = FirebaseDatabase.getInstance().getReference();
 
+        progressDialog=new ProgressDialog(this);
 
         listItem = new ArrayList<String>();
         adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, listItem);
@@ -92,11 +94,15 @@ public class MainActivity extends AppCompatActivity {
         curTime = format1.format(date);
         curTimeArr = curTime.split("-");
 
-        Log.d("Time", curTimeArr[1] + "-" + curTimeArr[2]);
+        Log.d("MAINACTIVITY_TIME", curTimeArr[1] + "-" + curTimeArr[2]);
+
+
+        progressDialog.setMessage("로딩중입니다...");
+        progressDialog.show();
         mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
-                Log.d("CURRENTLOC", dataSnapshot.toString());
+                Log.d("MAINACTIVITY_FIREBASE", dataSnapshot.toString());
                 if (dataSnapshot.getChildren() != null) {
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         //커스텀리스트뷰 동적으로 추가
@@ -112,19 +118,21 @@ public class MainActivity extends AppCompatActivity {
                         oAdapter.notifyDataSetChanged();
                     }
                 } else {
-                    Log.w("Database", "Value 없음");
+                    Log.w("MAINACTIVITY_FIREBASE", "Value 없음");
                 }
+                progressDialog.dismiss();
             }
 
             @Override
             public void onCancelled(DatabaseError error) {
                 // Failed to read value
-                Log.w("Database", "Failed to read value.", error.toException());
+                Log.w("MAINACTIVITY_FIREBASE", "Failed to read value.", error.toException());
+
+                progressDialog.dismiss();
             }
         });
 
 //유성
-
         timerText = findViewById(R.id.timeText);
         //메인타이머 버튼임
         //stopStartButton = (Button) findViewById(R.id.startstopbutton);
@@ -184,6 +192,7 @@ public class MainActivity extends AppCompatActivity {
         timerTask = new TimerTask() {
             @Override
             public void run() {
+                Log.d("MAINACTIVITY_TIMER","startTimer->run 호출");
                 // runOnUiThread함수를 이용하여 작업 스레드에서 타이머 텍스트를 변경한다.
                 runOnUiThread(new Runnable() {
                     @Override
