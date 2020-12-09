@@ -96,9 +96,7 @@ public class PlannerDetailActivity extends AppCompatActivity {
                                     inputTimes.setText(child.getValue(Todo.class).estimatedTime);
                                 }
                             }
-
                         }
-
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
                             Log.e("database", "Wring Url");

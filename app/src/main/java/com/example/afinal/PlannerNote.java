@@ -1,6 +1,7 @@
 package com.example.afinal;
 
 import android.app.ProgressDialog;
+import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,6 +17,7 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.database.DataSnapshot;
@@ -79,8 +81,13 @@ public class PlannerNote extends AppCompatActivity {
                 adapter.notifyDataSetChanged();
                 return true;
             case 3:
-                TimePickerFragment timePickerFragment = new TimePickerFragment(); // 타임피커 객체 생성
-                timePickerFragment.show(getSupportFragmentManager(), "timePicker");
+                TimePickerDialog timePickerDialog= new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker timePicker, int hour, int minute) {
+                        Toast.makeText(PlannerNote.this, hour+"시"+minute+"분", Toast.LENGTH_SHORT).show();
+                    }
+                },0,0,true); // 타임피커 객체 생성
+                timePickerDialog.show();
                 return true;
             default:
                 return super.onContextItemSelected(item);
@@ -127,6 +134,8 @@ public class PlannerNote extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        //listItem 초기화
         int i=0;
         for(String id:listItemId){
             listItemId[i++]="";
