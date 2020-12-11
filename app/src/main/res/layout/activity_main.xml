@@ -7,7 +7,6 @@
     tools:context=".MainActivity">
 
     <!-- 맨위 툴바 Timer, Start Btn   -->
-
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/timerToolbar"
         android:layout_width="match_parent"
@@ -18,8 +17,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:backgroundTint="@color/colorAccent">
-
-
         <TextView
             android:id="@+id/timeText"
             android:layout_width="match_parent"
@@ -29,17 +26,6 @@
             android:gravity="center_horizontal"
             android:textColor="@color/white"
             tools:layout_editor_absoluteX="16dp" />
-
-        //메인버튼 삭제
-        <!--        <Button-->
-        <!--            android:id="@+id/startstopbutton"-->
-        <!--            android:layout_width="wrap_content"-->
-        <!--            android:layout_height="wrap_content"-->
-        <!--            android:layout_gravity="end"-->
-        <!--            android:onClick="startStopTapped"-->
-        <!--            android:text="START"-->
-        <!--            android:textColor="@color/green"-->
-        <!--            android:textSize="@dimen/default_font_size" />-->
     </androidx.appcompat.widget.Toolbar>
 
     <ListView

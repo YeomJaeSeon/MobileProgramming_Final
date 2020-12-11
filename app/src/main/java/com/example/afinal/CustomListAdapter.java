@@ -24,26 +24,27 @@ public class CustomListAdapter extends BaseAdapter {
 
 
     LayoutInflater inflater = null;
-    private ArrayList<ItemData> m_oData = null;
-    private int nListCnt = 0;
+    private ArrayList<ItemData> m_oData = new ArrayList<ItemData>();
     boolean timerStarted = false;
 
     public CustomListAdapter(ArrayList<ItemData> _oData) {
         m_oData = _oData;
-        nListCnt = m_oData.size();
     }
-
 
     @Override
     public int getCount() {
-        return nListCnt;
+        return m_oData.size();
     }
 
     @Override
-    public Object getItem(int position) {return null;}
+    public Object getItem(int position) {
+        return m_oData.get(position);
+    }
 
     @Override
-    public long getItemId(int position) { return 0;}
+    public long getItemId(int position) {
+        return position;
+    }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
@@ -69,11 +70,11 @@ public class CustomListAdapter extends BaseAdapter {
                 if (timerStarted == false) {
                     timerStarted = true;
                     startButton.setText("STOP");
-                    ((MainActivity)MainActivity.mContext).startTimer(); // startTimer() 함수 호출
+                    ((MainActivity) MainActivity.mContext).startTimer(); // startTimer() 함수 호출
                 } else {
                     timerStarted = false;
                     startButton.setText("START");
-                    ((MainActivity)MainActivity.mContext).timerTask.cancel();
+                    ((MainActivity) MainActivity.mContext).timerTask.cancel();
                     //timerTask.cancel(); // timerTask 중단
                 }
             }
@@ -83,6 +84,12 @@ public class CustomListAdapter extends BaseAdapter {
         time.setText(m_oData.get(position).times);
         importance.setText(m_oData.get(position).importance);
         return convertView;
-    }}
+    }
+
+    public void addItem(ItemData data) {
+        m_oData.add(data);
+    }
+}
+
 
 //커스텀 리스트뷰 끝

@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -30,13 +31,13 @@ import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity {
 
-    Button addBtn;
     TextView timerText; // 홈 화면 총 공부시간
     //메인타이머버튼임
     //Button stopStartButton;
@@ -55,10 +56,12 @@ public class MainActivity extends AppCompatActivity {
 
     //리스트뷰
     boolean timerStarted = false;
-    ArrayAdapter<String> adapter;
-    ArrayList<String> listItem;
-    ListView listView;
+    CustomListAdapter oAdapter;
+    ArrayList<ItemData> oData;
+
+    //로딩창
     ProgressDialog progressDialog;
+
     //database 가져오기
     private DatabaseReference mDatabase;
 
@@ -72,33 +75,38 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mContext=this;
+        //Context
+        mContext = this;
+
         //quote
         quote = findViewById(R.id.quotes);
         author = findViewById(R.id.author);
         assetManager = getResources().getAssets();
         quoteObj.setQuote(quote, author, assetManager);
 
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        //ProgressDialog
+        progressDialog = new ProgressDialog(this);
+        progressDialog.setMessage("로딩중입니다...");
+        //로딩창 시작
+        progressDialog.show();
 
-        progressDialog=new ProgressDialog(this);
-
-        listItem = new ArrayList<String>();
-        adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, listItem);
-        listView = findViewById(R.id.listViewTodo);
-        listView.setAdapter(adapter);
-
-
+        //Dates
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
         curTime = format1.format(date);
         curTimeArr = curTime.split("-");
-
+        //현재시간 출력
         Log.d("MAINACTIVITY_TIME", curTimeArr[1] + "-" + curTimeArr[2]);
 
 
-        progressDialog.setMessage("로딩중입니다...");
-        progressDialog.show();
+        //arrayList, 리스트 아이템
+        oData = new ArrayList<>();
+        oAdapter = new CustomListAdapter(oData);
+        m_oListView = findViewById(R.id.listViewTodo);
+        m_oListView.setAdapter(oAdapter);
+
+        //Database
+        mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -110,17 +118,16 @@ public class MainActivity extends AppCompatActivity {
                         oItem.todo = child.getValue(Todo.class).name;
                         oItem.times = String.valueOf(child.getValue(Todo.class).estimatedTime);
                         oItem.importance = child.getValue(Todo.class).importance;
-                        oData.add(oItem);
-
-                        m_oListView = findViewById(R.id.listViewTodo);
-                        CustomListAdapter oAdapter = new CustomListAdapter(oData);
-                        m_oListView.setAdapter(oAdapter);
+                        oAdapter.addItem(oItem);
                         oAdapter.notifyDataSetChanged();
                     }
                 } else {
                     Log.w("MAINACTIVITY_FIREBASE", "Value 없음");
                 }
-                progressDialog.dismiss();
+                //로딩종료
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
             }
 
             @Override
@@ -132,11 +139,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-//유성
+
+        //유성
         timerText = findViewById(R.id.timeText);
-        //메인타이머 버튼임
-        //stopStartButton = (Button) findViewById(R.id.startstopbutton);
-        timer = new Timer(); // timer 객체 생성
 
         try {
             FileInputStream fis = openFileInput("time"); // 총 공부 시간을 저장할 "time" 내부 파일 열기
@@ -144,55 +149,23 @@ public class MainActivity extends AppCompatActivity {
             fis.read(buffer); // 파일이 끝날 때 까지 읽음
             String timeString = new String(buffer, StandardCharsets.UTF_8); // 파일에 저장된 총 공부 시간을 byte형에서 String형으로 형변환
             time = Double.parseDouble(timeString); // 총 공부 시간을 String형에서 Double형으로 형변환
-            timerText.setText(getTimerText()); // timertext에 총 공부 시간 display
-
+            //timerText.setText(getTimerText()); // timertext에 총 공부 시간 display
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        timerText.setText(getTimerText()); // timertext에 총 공부 시간 display
+
+
     }
 
-
-    final ArrayList<ItemData> oData = new ArrayList<>();// 염재선 수정
-
-
-    // 하단 버튼(통계 / 홈 / 플래너) 클릭 시 각 액티비티로 이동하는 메소드
-    public void switchIntent(View v) {
-        Intent intent_S = new Intent(MainActivity.this, StatisticsActivity.class);
-        Intent intent_P = new Intent(MainActivity.this, PlannerActivity.class);
-        int btnId = v.getId();
-
-        switch (btnId) {
-            case R.id.status:
-                startActivity(intent_S);
-                break;
-            case R.id.home:
-                break;
-            case R.id.planner:
-                startActivity(intent_P);
-                break;
-        }
-    }
-    //start버튼클릭 -메인 버튼잠깐삭제
-//    public void startStopTapped(View view) {
-//        if (timerStarted == false) {
-//            timerStarted = true;
-//            stopStartButton.setText("STOP");
-//            stopStartButton.setTextColor(ContextCompat.getColor(this, R.color.red));
-//            startTimer(); // startTimer() 함수 호출
-//        } else {
-//            timerStarted = false;
-//            stopStartButton.setText("START");
-//            stopStartButton.setTextColor(ContextCompat.getColor(this, R.color.green));
-//            timerTask.cancel(); // timerTask 중단
-//        }
-//    }
-
+    //Timer
     public void startTimer() {
         // timerTask 객체 생성
         timerTask = new TimerTask() {
             @Override
             public void run() {
-                Log.d("MAINACTIVITY_TIMER","startTimer->run 호출");
+                Log.d("MAINACTIVITY_TIMER", "startTimer->run 호출");
                 // runOnUiThread함수를 이용하여 작업 스레드에서 타이머 텍스트를 변경한다.
                 runOnUiThread(new Runnable() {
                     @Override
@@ -229,5 +202,26 @@ public class MainActivity extends AppCompatActivity {
     private String formatTime(int seconds, int minutes, int hours) {
         return String.format("%02d", hours) + " : " + String.format("%02d", minutes) + " : " + String.format("%02d", seconds);
     }
+
+
+    // 하단 버튼(통계 / 홈 / 플래너) 클릭 시 각 액티비티로 이동하는 메소드
+    public void switchIntent(View v) {
+        Intent intent_S = new Intent(MainActivity.this, StatisticsActivity.class);
+        Intent intent_P = new Intent(MainActivity.this, PlannerActivity.class);
+        int btnId = v.getId();
+
+        switch (btnId) {
+            case R.id.status:
+                startActivity(intent_S);
+                break;
+            case R.id.home:
+                break;
+            case R.id.planner:
+                startActivity(intent_P);
+                break;
+        }
+    }
+
+
 
 }
