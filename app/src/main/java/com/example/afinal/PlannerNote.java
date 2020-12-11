@@ -1,5 +1,6 @@
 package com.example.afinal;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
 import android.content.Intent;
@@ -19,6 +20,9 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,18 +40,17 @@ public class PlannerNote extends AppCompatActivity {
     ListView list;
     ArrayAdapter<String> adapter;
     ArrayList<String> listItem;
-    Button addBtn;
+    Button addBtn, backBtn;
     String[] days;
     String data;
-    String [] listItemId=new String[5];
+    String[] listItemId = new String[5];
     ProgressDialog progressDialog;
+    AlertDialog alertDialog;
+    AlertDialog.Builder builder;
+    int count;
     private DatabaseReference mDatabase;
 
 
-
-    public void removeTodo(String month,String day,String id){
-        mDatabase.child("datas").child(month).child(day).child(id).removeValue();
-    }
     //컨텍스트
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
@@ -67,9 +70,9 @@ public class PlannerNote extends AppCompatActivity {
             //수정
             case 1:
                 Intent goDetail = new Intent(PlannerNote.this, PlannerDetailActivity.class);
-                goDetail.putExtra("id",listItemId[itemId.position]);
-                goDetail.putExtra("month",days[1]);
-                goDetail.putExtra("day",days[2]);
+                goDetail.putExtra("id", listItemId[itemId.position]);
+                goDetail.putExtra("month", days[1]);
+                goDetail.putExtra("day", days[2]);
                 goDetail.putExtra("MONTHANDDAY", data);
                 startActivity(goDetail);
 
@@ -77,16 +80,16 @@ public class PlannerNote extends AppCompatActivity {
             //삭제
             case 2:
                 adapter.remove(adapter.getItem(itemId.position));
-                removeTodo(days[1],days[2],listItemId[itemId.position]);
+                removeTodo(days[1], days[2], listItemId[itemId.position]);
                 adapter.notifyDataSetChanged();
                 return true;
             case 3:
-                TimePickerDialog timePickerDialog= new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
+                TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
                     public void onTimeSet(TimePicker timePicker, int hour, int minute) {
-                        Toast.makeText(PlannerNote.this, hour+"시"+minute+"분", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(PlannerNote.this, hour + "시" + minute + "분", Toast.LENGTH_SHORT).show();
                     }
-                },0,0,true); // 타임피커 객체 생성
+                }, 0, 0, true); // 타임피커 객체 생성
                 timePickerDialog.show();
                 return true;
             default:
@@ -104,13 +107,17 @@ public class PlannerNote extends AppCompatActivity {
 
         list = findViewById(R.id.list);
         list.setAdapter(adapter);
-        progressDialog=new ProgressDialog(this);
+        progressDialog = new ProgressDialog(this);
+
+        //AlertDialog 추가
+        builder = new AlertDialog.Builder(this);
+        builder.setTitle("Todo 추가에러").setMessage("\n\n     Todo는 5개까지 만들 수 있습니다.\n     Todo를 삭제후 진행해 주세요\n");
         //컨텍스트 메뉴 등록
         registerForContextMenu(list);
         list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Log.d("listLongClicked",String.valueOf(i));
+                Log.d("listLongClicked", String.valueOf(i));
                 return false;
             }
         });
@@ -124,9 +131,21 @@ public class PlannerNote extends AppCompatActivity {
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent goDetail = new Intent(PlannerNote.this, PlannerDetailActivity.class);
-                goDetail.putExtra("MONTHANDDAY", data);
-                startActivity(goDetail);
+                if (count < 5) {
+                    Intent goDetail = new Intent(PlannerNote.this, PlannerDetailActivity.class);
+                    goDetail.putExtra("MONTHANDDAY", data);
+                    startActivity(goDetail);
+                } else {
+                    alertDialog= builder.create();
+                    alertDialog.show();
+                }
+            }
+        });
+        backBtn = findViewById(R.id.back);
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
             }
         });
     }
@@ -136,9 +155,9 @@ public class PlannerNote extends AppCompatActivity {
         super.onStart();
 
         //listItem 초기화
-        int i=0;
-        for(String id:listItemId){
-            listItemId[i++]="";
+        int i = 0;
+        for (String id : listItemId) {
+            listItemId[i++] = "";
         }
         listItem.clear();
 
@@ -149,14 +168,16 @@ public class PlannerNote extends AppCompatActivity {
                 new ValueEventListener() {
                     @Override
                     public void onDataChange(DataSnapshot dataSnapshot) {
-                        int i=0;
+                        int i = 0;
+                        count = (int) dataSnapshot.getChildrenCount();
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
                             listItem.add("할일:" + child.getValue(Todo.class).name + ", 걸리는 시간:" + child.getValue(Todo.class).estimatedTime + "시간" + ", 난이도:" + child.getValue(Todo.class).importance);
-                            listItemId[i++]=child.getKey();
+                            listItemId[i++] = child.getKey();
                         }
                         adapter.notifyDataSetChanged();
                         progressDialog.dismiss();
                     }
+
                     @Override
                     public void onCancelled(DatabaseError databaseError) {
                         Log.e("database", "Wrong Url");
@@ -165,45 +186,9 @@ public class PlannerNote extends AppCompatActivity {
                 });
     }
 
-
-
-    public void back(View v) {
-        if (v.getId() == R.id.back) {
-            this.finish();
-        }
+    public void removeTodo(String month, String day, String id) {
+        mDatabase.child("datas").child(month).child(day).child(id).removeValue();
+        count=count-1;
     }
 
-//
-//    @Override
-//    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        String month = data.getStringExtra("month");
-//        String day = data.getStringExtra("day");
-//        String id = data.getStringExtra("id");
-//
-//        final DatabaseReference todo = mDatabase.child("datas").child(month).child(day).child(id);
-//
-//        if (requestCode == GET_STRING) {
-//            if (resultCode == RESULT_OK) {
-//                //값 받았으니 view에 값 설정
-//                Log.d("PLANNERNOTE_FIREBASE", "" + todo.child("name").toString());
-//                todo.addListenerForSingleValueEvent(new ValueEventListener() {
-//                    @Override
-//                    public void onDataChange(DataSnapshot snapshot) {
-//                        listItem.add("할일:" + snapshot.getValue(Todo.class).name + ", 걸리는 시간:" + snapshot.getValue(Todo.class).estimatedTime + "시간" + ", 중요도:" + snapshot.getValue(Todo.class).importance);
-//                        adapter.notifyDataSetChanged();
-//                    }
-//
-//                    @Override
-//                    public void onCancelled(@NonNull DatabaseError error) {
-//                    }
-//                });
-//            } else if (resultCode == RESULT_CANCELED) {
-//                Log.e("Intent", "값을 받지 못함");
-//            }
-//        } else {
-//            Log.e("Intent", "Request코드 에러");
-//        }
-//    }
 }

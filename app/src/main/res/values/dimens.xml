@@ -3,6 +3,7 @@
     <dimen name="textview_height">25dp</dimen>
     <dimen name="textview_width">170dp</dimen>
     <dimen name="ball_radius">30dp</dimen>
+    <dimen name="small_font_size">15sp</dimen>
     <dimen name="default_font_size">20sp</dimen>
     <dimen name="medium_font_size">30sp</dimen>
     <dimen name="large_font_size">50sp</dimen>

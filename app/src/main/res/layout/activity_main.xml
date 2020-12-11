@@ -16,11 +16,11 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:backgroundTint="@color/colorAccent">
+        android:backgroundTint="@color/colorPrimary">
         <TextView
             android:id="@+id/timeText"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="70dp"
             android:text="00:00"
             android:textSize="@dimen/large_font_size"
             android:gravity="center_horizontal"
@@ -57,7 +57,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="left"
             android:text="10분뒤와 10년뒤를 동시에 생각하라."
-            android:textSize="@dimen/default_font_size" />
+            android:textSize="@dimen/small_font_size" />
 
         <TextView
             android:id="@+id/author"

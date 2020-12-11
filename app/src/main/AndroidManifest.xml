@@ -14,7 +14,8 @@
             android:enabled="true"
             android:exported="true"></receiver>
 
-        <activity android:name=".LoadingActivity">
+        <activity android:name=".LoadingActivity"
+            android:label="Loading">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

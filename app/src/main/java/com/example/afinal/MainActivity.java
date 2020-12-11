@@ -1,5 +1,6 @@
 package com.example.afinal;
 
+import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.Window;
 import android.widget.Adapter;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -46,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
     //현재시간
     String curTime;
     String[] curTimeArr;
-
     //명언
     TextView quote, author;
     AssetManager assetManager;
@@ -70,15 +71,25 @@ public class MainActivity extends AppCompatActivity {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //액션바 표시 안하기
+        supportRequestWindowFeature(Window.FEATURE_NO_TITLE);
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         //Context
         mContext = this;
 
         //quote
         quote = findViewById(R.id.quotes);
+        //삭제
+        //quote.setText("When one door of happiness closes, another opens, but often we look so long at the closed door that we do not see the one that has been opened for us.");
+
         author = findViewById(R.id.author);
+        //삭제
+        //author.setText("Helen Keller");
         assetManager = getResources().getAssets();
+
         quoteObj.setQuote(quote, author, assetManager);
 
         //ProgressDialog
