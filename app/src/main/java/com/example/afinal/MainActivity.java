@@ -39,9 +39,7 @@ import java.util.TimerTask;
 public class MainActivity extends AppCompatActivity {
 
     TextView timerText; // 홈 화면 총 공부시간
-    //메인타이머버튼임
-    //Button stopStartButton;
-    Button newStartButton;
+
     Timer timer;
     TimerTask timerTask;
     Double time = 0.0;
@@ -55,7 +53,6 @@ public class MainActivity extends AppCompatActivity {
     Quote quoteObj = new Quote();
 
     //리스트뷰
-    boolean timerStarted = false;
     CustomListAdapter oAdapter;
     ArrayList<ItemData> oData;
 
@@ -142,7 +139,15 @@ public class MainActivity extends AppCompatActivity {
 
         //유성
         timerText = findViewById(R.id.timeText);
+        timer = new Timer();
+        if (readTimeFile()) {
+            timerText.setText(getTimerText()); // timertext에 총 공부 시간 display
+        }
+    }
 
+    //Timer
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public boolean readTimeFile(){
         try {
             FileInputStream fis = openFileInput("time"); // 총 공부 시간을 저장할 "time" 내부 파일 열기
             byte[] buffer = new byte[fis.available()]; // 파일에 값을 읽을 byte형 변수 buffer 생성
@@ -150,16 +155,12 @@ public class MainActivity extends AppCompatActivity {
             String timeString = new String(buffer, StandardCharsets.UTF_8); // 파일에 저장된 총 공부 시간을 byte형에서 String형으로 형변환
             time = Double.parseDouble(timeString); // 총 공부 시간을 String형에서 Double형으로 형변환
             //timerText.setText(getTimerText()); // timertext에 총 공부 시간 display
+            return true;
         } catch (IOException e) {
             e.printStackTrace();
+            return false;
         }
-
-        timerText.setText(getTimerText()); // timertext에 총 공부 시간 display
-
-
     }
-
-    //Timer
     public void startTimer() {
         // timerTask 객체 생성
         timerTask = new TimerTask() {
