@@ -58,6 +58,15 @@ public class CustomListAdapter extends BaseAdapter {
     TimerTask timerTask;
     private DatabaseReference mDatabase;
 
+    public static class CustomViewHolder{
+        public TextView todo ;
+        public TextView estimatedTime;
+        public TextView importance;
+        public TextView time ;
+        public Button startButton ;
+
+
+    }
     public CustomListAdapter(ArrayList<ItemData> _oData) {
         m_oData = _oData;
     }
@@ -79,13 +88,26 @@ public class CustomListAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
+
+        final CustomViewHolder customViewHolder;
+
         if (convertView == null) {
             final Context context = parent.getContext();
             if (inflater == null) {
                 inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             }
             convertView = inflater.inflate(R.layout.main_listview, parent, false);
+            customViewHolder=new CustomViewHolder();
+            customViewHolder.todo=(TextView) convertView.findViewById(R.id.todo);
+            customViewHolder.estimatedTime = convertView.findViewById(R.id.estimatedTime);
+            customViewHolder.importance = convertView.findViewById(R.id.importance);
+            customViewHolder.time = convertView.findViewById(R.id.time);
+            customViewHolder.startButton = convertView.findViewById(R.id.startstopbutton);
+            convertView.setTag(customViewHolder);
+        }else{
+            customViewHolder=(CustomViewHolder)convertView.getTag();
         }
+
         //ㅠㅠ
         //Dates
         Date date = new Date(System.currentTimeMillis());
@@ -94,7 +116,6 @@ public class CustomListAdapter extends BaseAdapter {
         curTimeArr = curTime.split("-");
         //현재시간 출력
         Log.d("MAINACTIVITY_TIME", curTimeArr[1] + "-" + curTimeArr[2]);
-
 
         //database
         mDatabase = FirebaseDatabase.getInstance().getReference();
@@ -125,29 +146,25 @@ public class CustomListAdapter extends BaseAdapter {
         //안되면 지우자
 
 
-        TextView todo = convertView.findViewById(R.id.todo);
-        TextView estimatedTime = convertView.findViewById(R.id.estimatedTime);
-        TextView importance = convertView.findViewById(R.id.importance);
-        time = convertView.findViewById(R.id.time);
-        startButton = convertView.findViewById(R.id.startstopbutton);
 
-        todo.setText(m_oData.get(position).todo);
-        estimatedTime.setText(m_oData.get(position).times);
-        importance.setText(m_oData.get(position).importance);
-        time.setText(getTimerText(Double.parseDouble(m_oData.get(position).time)));
+        customViewHolder.todo.setText(m_oData.get(position).todo);
+        customViewHolder.estimatedTime.setText(m_oData.get(position).times);
+        customViewHolder.importance.setText(m_oData.get(position).importance);
+        customViewHolder.time.setText(getTimerText(Double.parseDouble(m_oData.get(position).time)));
 
         //리스트뷰의 타이머 클릭했을때 타이머시작 & stop 구현
-        startButton.setOnClickListener(new View.OnClickListener() {
+        customViewHolder.startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (flagCount[position] == false) {
                     mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).child(listItemId[position]).child("flag").setValue(true);
-                    startButton.post(new Runnable() {
+                    customViewHolder.startButton.post(new Runnable() {
                         @Override
                         public void run() {
-                            startButton.setText("STOP");
+                            customViewHolder.startButton.setText("STOP");
                         }
                     });
+
                     timerTask = new TimerTask() {
                         @Override
                         public void run() {
@@ -159,7 +176,7 @@ public class CustomListAdapter extends BaseAdapter {
                     ((MainActivity) MainActivity.mContext).timer.schedule(timerTask, 0, 1000);
                 } else if (flagCount[position] == true) {
                     mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).child(listItemId[position]).child("flag").setValue(false);
-                    startButton.setText("START");
+                    customViewHolder.startButton.setText("START");
                     timerTask.cancel(); // timerTask 중단
                 }
             }
