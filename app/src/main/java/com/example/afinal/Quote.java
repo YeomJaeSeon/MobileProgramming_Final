@@ -1,8 +1,11 @@
 package com.example.afinal;
 
 import android.content.res.AssetManager;
+import android.os.Build;
 import android.util.Log;
 import android.widget.TextView;
+
+import androidx.annotation.RequiresApi;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,6 +19,7 @@ public class Quote {
 
 
     //assets파일에서 json파일을 읽어오는 함수
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private String getJson(AssetManager assetManager) {
 
         String data = null;

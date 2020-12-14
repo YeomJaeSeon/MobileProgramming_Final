@@ -15,19 +15,22 @@ public class Todo {
     public String month;
     public String day;
     public String id;
+    public double time;
+    public boolean flag;
 
     //생성자
     public Todo() {
         mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
-    public Todo(String _name, String _month, String _day, String _estimatedTime, String _importance, String _id) {
+    public Todo(String _name, String _month, String _day, String _estimatedTime, String _importance, String _id, double _time) {
         this.name = _name;
         this.month = _month;
         this.day = _day;
         this.estimatedTime = _estimatedTime;
         this.importance = _importance;
         this.id = _id;
+        this.time = _time;
     }
 
     @Exclude
@@ -37,8 +40,10 @@ public class Todo {
         result.put("estimatedTime", estimatedTime);
         result.put("importance", importance);
         result.put("month", month);
-        result.put("id",id);
+        result.put("id", id);
         result.put("day", day);
+        result.put("time", time);
+        result.put("flag", flag);
         return result;
     }
 }

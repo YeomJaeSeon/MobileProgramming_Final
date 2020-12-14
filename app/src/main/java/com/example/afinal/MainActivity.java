@@ -2,11 +2,15 @@ package com.example.afinal;
 
 import android.app.ActionBar;
 import android.app.ProgressDialog;
+import android.app.Service;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.res.AssetManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
@@ -16,6 +20,7 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -29,6 +34,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,9 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
     TextView timerText; // 홈 화면 총 공부시간
 
-    Timer timer;
-    TimerTask timerTask;
-    Double time = 0.0;
     //현재시간
     String curTime;
     String[] curTimeArr;
@@ -55,14 +58,35 @@ public class MainActivity extends AppCompatActivity {
 
     //리스트뷰
     CustomListAdapter oAdapter;
-    ArrayList<ItemData> oData;
+    ArrayList<ItemData> oData = new ArrayList<>();
+    String[] listItemId = new String[5];
 
     //로딩창
     ProgressDialog progressDialog;
+    //time
+    Timer timer;
+    Double time = 0.0;
+
+
+    //Service
+    Service mService;
+    ServiceConnection mConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+            TimeService.TimeBinder timeBinder = (TimeService.TimeBinder) iBinder;
+            mService = timeBinder.getService();
+
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName componentName) {
+            mService = null;
+        }
+    };
+    Intent intent;
 
     //database 가져오기
     private DatabaseReference mDatabase;
-
     //커스텀 리스트뷰
     private ListView m_oListView = null;
 
@@ -80,14 +104,13 @@ public class MainActivity extends AppCompatActivity {
         //Context
         mContext = this;
 
+
         //quote
         quote = findViewById(R.id.quotes);
         //삭제
         //quote.setText("When one door of happiness closes, another opens, but often we look so long at the closed door that we do not see the one that has been opened for us.");
-
-        author = findViewById(R.id.author);
-        //삭제
         //author.setText("Helen Keller");
+        author = findViewById(R.id.author);
         assetManager = getResources().getAssets();
 
         quoteObj.setQuote(quote, author, assetManager);
@@ -98,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
         //로딩창 시작
         progressDialog.show();
 
+
         //Dates
         Date date = new Date(System.currentTimeMillis());
         SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
@@ -105,7 +129,6 @@ public class MainActivity extends AppCompatActivity {
         curTimeArr = curTime.split("-");
         //현재시간 출력
         Log.d("MAINACTIVITY_TIME", curTimeArr[1] + "-" + curTimeArr[2]);
-
 
         //arrayList, 리스트 아이템
         oData = new ArrayList<>();
@@ -115,17 +138,34 @@ public class MainActivity extends AppCompatActivity {
 
         //Database
         mDatabase = FirebaseDatabase.getInstance().getReference();
+        //유성
+        timerText = findViewById(R.id.timeText);
+        timer = new Timer();
+        if (readTimeFile()) {
+            timerText.setText(getTimerText(time)); // timertext에 총 공부 시간 display
+        }
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d("MAINACTIVITY_FIREBASE", dataSnapshot.toString());
                 if (dataSnapshot.getChildren() != null) {
+                    int i = 0;
+                    oData.clear();
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         //커스텀리스트뷰 동적으로 추가
                         ItemData oItem = new ItemData();
                         oItem.todo = child.getValue(Todo.class).name;
                         oItem.times = String.valueOf(child.getValue(Todo.class).estimatedTime);
                         oItem.importance = child.getValue(Todo.class).importance;
+                        oItem.time = String.valueOf(child.getValue(Todo.class).time);
+                        listItemId[i] = child.getValue(Todo.class).id;
+                        i++;
                         oAdapter.addItem(oItem);
                         oAdapter.notifyDataSetChanged();
                     }
@@ -142,23 +182,31 @@ public class MainActivity extends AppCompatActivity {
             public void onCancelled(DatabaseError error) {
                 // Failed to read value
                 Log.w("MAINACTIVITY_FIREBASE", "Failed to read value.", error.toException());
-
                 progressDialog.dismiss();
             }
         });
 
+        //Service
+        intent = new Intent(this, TimeService.class);
+        startService(intent);
+        bindService(intent, mConnection, BIND_AUTO_CREATE);
+    }
 
-        //유성
-        timerText = findViewById(R.id.timeText);
-        timer = new Timer();
-        if (readTimeFile()) {
-            timerText.setText(getTimerText()); // timertext에 총 공부 시간 display
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        for (int i = 0; i < listItemId.length; i++) {
+            if (listItemId[i] != null) {
+                mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).child(listItemId[i]).child("flag").setValue(false);
+            }
         }
     }
 
     //Timer
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public boolean readTimeFile(){
+    public boolean readTimeFile() {
         try {
             FileInputStream fis = openFileInput("time"); // 총 공부 시간을 저장할 "time" 내부 파일 열기
             byte[] buffer = new byte[fis.available()]; // 파일에 값을 읽을 byte형 변수 buffer 생성
@@ -172,37 +220,21 @@ public class MainActivity extends AppCompatActivity {
             return false;
         }
     }
-    public void startTimer() {
-        // timerTask 객체 생성
-        timerTask = new TimerTask() {
-            @Override
-            public void run() {
-                Log.d("MAINACTIVITY_TIMER", "startTimer->run 호출");
-                // runOnUiThread함수를 이용하여 작업 스레드에서 타이머 텍스트를 변경한다.
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        time++; // 시간을 1증가 시킴
-                        timerText.setText(getTimerText()); // 시간 갱신
 
-                        // 파일에 시간 저장
-                        try {
-                            FileOutputStream fos = openFileOutput("time", Context.MODE_PRIVATE);
-                            fos.write(time.toString().getBytes());
-                            fos.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                });
-            }
-        };
-        timer.scheduleAtFixedRate(timerTask, 0, 1000); // 즉시 타이머를 구동하고 1000 밀리초 단위로 반복
+    public void saveTimeFile() {
+        // 파일에 시간 저장
+        try {
+            FileOutputStream fos = openFileOutput("time", Context.MODE_PRIVATE);
+            fos.write(time.toString().getBytes());
+            fos.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
+
     // 초 단위로 되어있는 시간 값을 (시간 : 분 : 초) 형식으로 만드는 메소드
-    private String getTimerText() {
+    private String getTimerText(double time) {
         int rounded = (int) Math.round(time); // double형인 변수 time을 int형으로 형변환
         int seconds = ((rounded % 86400) % 3600) % 60; // 초
         int minutes = ((rounded % 86400) % 3600) / 60; // 분
@@ -233,7 +265,5 @@ public class MainActivity extends AppCompatActivity {
                 break;
         }
     }
-
-
 
 }
