@@ -3,6 +3,7 @@ package com.example.afinal;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -23,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -53,20 +56,19 @@ public class CustomListAdapter extends BaseAdapter {
     String[] listItemId = new String[5];
     Double[] timeCount = new Double[5];
     boolean[] flagCount = new boolean[5];
-    TextView time;
-    Button startButton;
-    TimerTask timerTask;
+    TimerTask[] timerTasks = new TimerTask[5];
+    Timer timer;
     private DatabaseReference mDatabase;
 
-    public static class CustomViewHolder{
-        public TextView todo ;
+    public static class CustomViewHolder {
+        public TextView todo;
         public TextView estimatedTime;
         public TextView importance;
-        public TextView time ;
-        public Button startButton ;
-
-
+        public TextView time;
+        public Button startButton;
+        public Timer timer;
     }
+
     public CustomListAdapter(ArrayList<ItemData> _oData) {
         m_oData = _oData;
     }
@@ -86,6 +88,7 @@ public class CustomListAdapter extends BaseAdapter {
         return position;
     }
 
+
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
 
@@ -97,15 +100,15 @@ public class CustomListAdapter extends BaseAdapter {
                 inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             }
             convertView = inflater.inflate(R.layout.main_listview, parent, false);
-            customViewHolder=new CustomViewHolder();
-            customViewHolder.todo=(TextView) convertView.findViewById(R.id.todo);
+            customViewHolder = new CustomViewHolder();
+            customViewHolder.todo = (TextView) convertView.findViewById(R.id.todo);
             customViewHolder.estimatedTime = convertView.findViewById(R.id.estimatedTime);
             customViewHolder.importance = convertView.findViewById(R.id.importance);
             customViewHolder.time = convertView.findViewById(R.id.time);
             customViewHolder.startButton = convertView.findViewById(R.id.startstopbutton);
             convertView.setTag(customViewHolder);
-        }else{
-            customViewHolder=(CustomViewHolder)convertView.getTag();
+        } else {
+            customViewHolder = (CustomViewHolder) convertView.getTag();
         }
 
         //ㅠㅠ
@@ -116,7 +119,6 @@ public class CustomListAdapter extends BaseAdapter {
         curTimeArr = curTime.split("-");
         //현재시간 출력
         Log.d("MAINACTIVITY_TIME", curTimeArr[1] + "-" + curTimeArr[2]);
-
         //database
         mDatabase = FirebaseDatabase.getInstance().getReference();
         mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).addListenerForSingleValueEvent(new ValueEventListener() {
@@ -142,17 +144,13 @@ public class CustomListAdapter extends BaseAdapter {
                 Log.w("CUSTOMLISTVIEW_FIREBASE", "Failed to read value.", error.toException());
             }
         });
-
-        //안되면 지우자
-
-
-
         customViewHolder.todo.setText(m_oData.get(position).todo);
         customViewHolder.estimatedTime.setText(m_oData.get(position).times);
         customViewHolder.importance.setText(m_oData.get(position).importance);
         customViewHolder.time.setText(getTimerText(Double.parseDouble(m_oData.get(position).time)));
 
         //리스트뷰의 타이머 클릭했을때 타이머시작 & stop 구현
+
         customViewHolder.startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -161,23 +159,33 @@ public class CustomListAdapter extends BaseAdapter {
                     customViewHolder.startButton.post(new Runnable() {
                         @Override
                         public void run() {
+                            for (int i = 0; i < parent.getChildCount(); i++) {
+                                if (parent.getChildAt(i) != null) {
+                                    Button v = (Button) parent.getChildAt(i).findViewById(R.id.startstopbutton);
+                                    v.setText("Start");
+                                }
+                            }
                             customViewHolder.startButton.setText("STOP");
                         }
                     });
-
-                    timerTask = new TimerTask() {
+                    //반드시 정지하고 다음액티비티로 가야댐
+                    for (TimerTask timerTask : timerTasks) {
+                        if (timerTask != null) {
+                            timerTask.cancel();
+                        }
+                    }
+                    timerTasks[position] = new TimerTask() {
                         @Override
                         public void run() {
                             timeCount[position]++;
-                            //반드시 정지하고 다음액티비티로 가야댐
                             mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).child(listItemId[position]).child("time").setValue(timeCount[position]);
                         }
                     };
-                    ((MainActivity) MainActivity.mContext).timer.schedule(timerTask, 0, 1000);
+                    ((MainActivity) MainActivity.mContext).timer.scheduleAtFixedRate(timerTasks[position], 0, 1000);
                 } else if (flagCount[position] == true) {
                     mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).child(listItemId[position]).child("flag").setValue(false);
                     customViewHolder.startButton.setText("START");
-                    timerTask.cancel(); // timerTask 중단
+                    timerTasks[position].cancel();
                 }
             }
         });
@@ -202,6 +210,3 @@ public class CustomListAdapter extends BaseAdapter {
         m_oData.add(data);
     }
 }
-
-
-//커스텀 리스트뷰 끝

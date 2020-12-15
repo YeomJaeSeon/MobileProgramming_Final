@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.AssetManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
@@ -51,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
     //현재시간
     String curTime;
     String[] curTimeArr;
+
+
     //명언
     TextView quote, author;
     AssetManager assetManager;
@@ -66,8 +69,7 @@ public class MainActivity extends AppCompatActivity {
     //time
     Timer timer;
     Double time = 0.0;
-
-
+    Double[] times = new Double[5];
     //Service
     Service mService;
     ServiceConnection mConnection = new ServiceConnection() {
@@ -103,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Context
         mContext = this;
-
+        timer=new Timer();
 
         //quote
         quote = findViewById(R.id.quotes);
@@ -140,11 +142,11 @@ public class MainActivity extends AppCompatActivity {
         mDatabase = FirebaseDatabase.getInstance().getReference();
         //유성
         timerText = findViewById(R.id.timeText);
-        timer = new Timer();
-        if (readTimeFile()) {
-            timerText.setText(getTimerText(time)); // timertext에 총 공부 시간 display
-        }
-
+//        Double sum = 0.0;
+//        for (int i = 0; i < times.length; i++) {
+//            saum += times[i];
+//        }
+//        timerText.setText(getTimerText(sum)); // timertext에 총 공부 시간 display
     }
 
     @Override
@@ -165,10 +167,12 @@ public class MainActivity extends AppCompatActivity {
                         oItem.importance = child.getValue(Todo.class).importance;
                         oItem.time = String.valueOf(child.getValue(Todo.class).time);
                         listItemId[i] = child.getValue(Todo.class).id;
+                        times[i] = child.getValue(Todo.class).time;
                         i++;
                         oAdapter.addItem(oItem);
                         oAdapter.notifyDataSetChanged();
                     }
+
                 } else {
                     Log.w("MAINACTIVITY_FIREBASE", "Value 없음");
                 }
@@ -191,9 +195,6 @@ public class MainActivity extends AppCompatActivity {
         startService(intent);
         bindService(intent, mConnection, BIND_AUTO_CREATE);
     }
-
-
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -204,33 +205,34 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    //Timer
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public boolean readTimeFile() {
-        try {
-            FileInputStream fis = openFileInput("time"); // 총 공부 시간을 저장할 "time" 내부 파일 열기
-            byte[] buffer = new byte[fis.available()]; // 파일에 값을 읽을 byte형 변수 buffer 생성
-            fis.read(buffer); // 파일이 끝날 때 까지 읽음
-            String timeString = new String(buffer, StandardCharsets.UTF_8); // 파일에 저장된 총 공부 시간을 byte형에서 String형으로 형변환
-            time = Double.parseDouble(timeString); // 총 공부 시간을 String형에서 Double형으로 형변환
-            //timerText.setText(getTimerText()); // timertext에 총 공부 시간 display
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    public void saveTimeFile() {
-        // 파일에 시간 저장
-        try {
-            FileOutputStream fos = openFileOutput("time", Context.MODE_PRIVATE);
-            fos.write(time.toString().getBytes());
-            fos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    //Timer____LEGACY
+//    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+//    public boolean readTimeFile() {
+//        try {
+//            FileInputStream fis = openFileInput("time"); // 총 공부 시간을 저장할 "time" 내부 파일 열기
+//            byte[] buffer = new byte[fis.available()]; // 파일에 값을 읽을 byte형 변수 buffer 생성
+//            fis.read(buffer); // 파일이 끝날 때 까지 읽음
+//            String timeString = new String(buffer, StandardCharsets.UTF_8); // 파일에 저장된 총 공부 시간을 byte형에서 String형으로 형변환
+//            time = Double.parseDouble(timeString); // 총 공부 시간을 String형에서 Double형으로 형변환
+//            //timerText.setText(getTimerText()); // timertext에 총 공부 시간 display
+//            return true;
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return false;
+//        }
+//    }
+//
+//    public void saveTimeFile() {
+//        // 파일에 시간 저장
+//        try {
+//            FileOutputStream fos = openFileOutput("time", Context.MODE_PRIVATE);
+//
+//            fos.write(time.toString().getBytes());
+//            fos.close();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
 
     // 초 단위로 되어있는 시간 값을 (시간 : 분 : 초) 형식으로 만드는 메소드
