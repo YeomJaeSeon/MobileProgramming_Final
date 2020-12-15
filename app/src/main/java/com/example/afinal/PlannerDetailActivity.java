@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
-
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -42,10 +41,11 @@ public class PlannerDetailActivity extends AppCompatActivity {
     String todo;
     String estimatedTime;
     String importance = "";
-    String id=null;
+    String id = null;
     String data;
     Button addBtn;
     ProgressDialog progressDialog;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
@@ -60,22 +60,22 @@ public class PlannerDetailActivity extends AppCompatActivity {
 
         inputTodo = findViewById(R.id.editTextTextPersonName);
         inputTimes = findViewById(R.id.editTextEstimatedTime);
-        progressDialog=new ProgressDialog(this);
+        progressDialog = new ProgressDialog(this);
         Intent intent = getIntent();
 
         progressDialog.setMessage("로딩중입니다...");
         progressDialog.show();
         //DB접근 될때
-        if(intent.getStringExtra("id")!=null){
-            id=intent.getStringExtra("id");
-            month=intent.getStringExtra("month");
-            day=intent.getStringExtra("day");
-            addBtn=findViewById(R.id.add);
+        if (intent.getStringExtra("id") != null) {
+            id = intent.getStringExtra("id");
+            month = intent.getStringExtra("month");
+            day = intent.getStringExtra("day");
+            addBtn = findViewById(R.id.add);
             addBtn.setText("수정");
         }
 
         //수정을 클릭하여 id가 있으면 id를 새로 만들지 않는다.
-        if(id==null) {
+        if (id == null) {
             id = String.valueOf(new Date().getTime());
         }
         data = intent.getStringExtra("MONTHANDDAY"); // 선택한 년도 월 일임. - 이걸 파일처리를 이용할것
@@ -84,7 +84,7 @@ public class PlannerDetailActivity extends AppCompatActivity {
         day = (div[2]);
 
         //intent에 Id정보가 담겨오면 수정버튼을 클릭한것임으로 id정보가 있으면 수정화면으로 변환
-        if(intent.getStringExtra("id")!=null){
+        if (intent.getStringExtra("id") != null) {
             id = intent.getStringExtra("id");
             //db 가져오기
             Log.d("DATE", month + " " + day);
@@ -101,6 +101,7 @@ public class PlannerDetailActivity extends AppCompatActivity {
                                 }
                             }
                         }
+
                         @Override
                         public void onCancelled(DatabaseError databaseError) {
                             Log.e("database", "Wring Url");
@@ -145,20 +146,19 @@ public class PlannerDetailActivity extends AppCompatActivity {
             }
 
             progressDialog.show();
-            writeNewTodo(todo, month, day, estimatedTime, importance, id,0);
+            writeNewTodo(todo, month, day, estimatedTime, importance, id, 0);
             progressDialog.dismiss();
             //setResult(RESULT_OK, intent);
             this.finish();
-        }
-        else if (v.getId() == R.id.goback){
+        } else if (v.getId() == R.id.goback) {
             //setResult(RESULT_CANCELED, intent);
             this.finish();
         }
     }
 
-    public void writeNewTodo(String _name, String _month, String _day, String _estimatedTime, String _importance, String _id,double _time) {
+    public void writeNewTodo(String _name, String _month, String _day, String _estimatedTime, String _importance, String _id, double _time) {
         HashMap<String, Object> childUpdates = new HashMap<>();
-        Todo todo = new Todo(_name, _month, _day, _estimatedTime, _importance, _id,_time);
+        Todo todo = new Todo(_name, _month, _day, _estimatedTime, _importance, _id, _time);
         Map<String, Object> todoData = todo.toMap();
 
         //Database에 들어갈 경로 설정정

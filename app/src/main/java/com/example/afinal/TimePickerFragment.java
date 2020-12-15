@@ -17,9 +17,10 @@ import java.util.Calendar;
 
 public class TimePickerFragment extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
     private AlarmManager mAlarmManager;
+
     @NonNull
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState){
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
         mAlarmManager = (AlarmManager) getContext().getSystemService(Context.ALARM_SERVICE); // 알람 매니저 객체에 알람 서비스 설정
 
         Calendar calendar = Calendar.getInstance(); // 캘린더 객체 생성
@@ -30,7 +31,7 @@ public class TimePickerFragment extends DialogFragment implements TimePickerDial
     }
 
     @Override
-    public void onTimeSet(TimePicker View, int hourOfDay, int minute){
+    public void onTimeSet(TimePicker View, int hourOfDay, int minute) {
         Calendar calendar = Calendar.getInstance();
         calendar.set(Calendar.HOUR_OF_DAY, hourOfDay); // 사용자가 설정한 시간으로 덮어씀
         calendar.set(Calendar.MINUTE, minute);

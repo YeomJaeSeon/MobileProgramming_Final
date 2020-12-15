@@ -39,7 +39,7 @@ public class Quote {
     }
 
     //읽어온 json 파일을 string파일로 변환시켜 textView에 setText하는 함수
-    public void setQuote(TextView quote, TextView author,AssetManager assetManager) {
+    public void setQuote(TextView quote, TextView author, AssetManager assetManager) {
         JSONObject obj, content;
         JSONArray jsonArray;
         String quotes, title, subtitle;
@@ -63,7 +63,7 @@ public class Quote {
             author.setText("- " + subtitle + " -");
 
         } catch (JSONException ex) {
-            Log.e("Quote",ex.toString());
+            Log.e("Quote", ex.toString());
             ex.printStackTrace();
         }
     }

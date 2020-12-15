@@ -1,21 +1,15 @@
 package com.example.afinal;
 
 
-import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import androidx.annotation.NonNull;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -23,27 +17,22 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.logging.Handler;
 
 //커스텀리스트뷰 시작 재선
-
+//customViewHolder=>현재 선택한 view
+//parent.getChildAt(int i).findViewById(R.id.~~~); 원하는 view 선택
 class ItemData {
     String todo;
     String times;
     String importance;
     String time;
-    boolean flag;
 
     public ItemData() {
-
     }
 }
 
@@ -55,9 +44,7 @@ public class CustomListAdapter extends BaseAdapter {
     String curTime;
     String[] listItemId = new String[5];
     Double[] timeCount = new Double[5];
-    boolean[] flagCount = new boolean[5];
     TimerTask[] timerTasks = new TimerTask[5];
-    Timer timer;
     private DatabaseReference mDatabase;
 
     public static class CustomViewHolder {
@@ -88,12 +75,9 @@ public class CustomListAdapter extends BaseAdapter {
         return position;
     }
 
-
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
-
         final CustomViewHolder customViewHolder;
-
         if (convertView == null) {
             final Context context = parent.getContext();
             if (inflater == null) {
@@ -130,7 +114,6 @@ public class CustomListAdapter extends BaseAdapter {
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         listItemId[i] = child.getValue(Todo.class).id;
                         timeCount[i] = child.getValue(Todo.class).time;
-                        flagCount[i] = child.getValue(Todo.class).flag;
                         i++;
                     }
                 } else {
@@ -154,26 +137,24 @@ public class CustomListAdapter extends BaseAdapter {
         customViewHolder.startButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (flagCount[position] == false) {
-                    mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).child(listItemId[position]).child("flag").setValue(true);
-                    customViewHolder.startButton.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            for (int i = 0; i < parent.getChildCount(); i++) {
-                                if (parent.getChildAt(i) != null) {
-                                    Button v = (Button) parent.getChildAt(i).findViewById(R.id.startstopbutton);
-                                    v.setText("Start");
-                                }
-                            }
-                            customViewHolder.startButton.setText("STOP");
+                //if 현재 선택한 view의 택스트라 start라 쓰여있을때 즉 현재 stop상태
+                if (customViewHolder.startButton.getText().toString().equals("START")) {
+                    //모든 view의 버튼 Start로 바꾸자
+                    for (int i = 0; i < parent.getChildCount(); i++) {
+                        if (parent.getChildAt(i) != null) {
+                            Button btn = (Button) parent.getChildAt(i).findViewById(R.id.startstopbutton);
+                            btn.setText("START");
                         }
-                    });
-                    //반드시 정지하고 다음액티비티로 가야댐
+                    }
+                    //현재 선택한 버튼은 STOP으로 바꾸자
+                    customViewHolder.startButton.setText("STOP");
+                    //현재 실행되고 있는 모든 timerTask 종료 한 다음
                     for (TimerTask timerTask : timerTasks) {
                         if (timerTask != null) {
                             timerTask.cancel();
                         }
                     }
+                    //현재 선택한 view를 위한 timerTask를 실행하자
                     timerTasks[position] = new TimerTask() {
                         @Override
                         public void run() {
@@ -181,9 +162,11 @@ public class CustomListAdapter extends BaseAdapter {
                             mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).child(listItemId[position]).child("time").setValue(timeCount[position]);
                         }
                     };
-                    ((MainActivity) MainActivity.mContext).timer.scheduleAtFixedRate(timerTasks[position], 0, 1000);
-                } else if (flagCount[position] == true) {
-                    mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).child(listItemId[position]).child("flag").setValue(false);
+                    ((MainActivity) MainActivity.mContext).timer.scheduleAtFixedRate(timerTasks[position], 1000, 1000);
+                }
+                //현재 선택한 버튼이 STOP일때 즉 현재 timerTask가 돌고있을때
+                else {
+                    Toast.makeText(((MainActivity) MainActivity.mContext), "스케쥴 스톱", Toast.LENGTH_SHORT).show();
                     customViewHolder.startButton.setText("START");
                     timerTasks[position].cancel();
                 }

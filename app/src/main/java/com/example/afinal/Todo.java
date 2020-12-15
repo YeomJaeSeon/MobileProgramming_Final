@@ -16,7 +16,7 @@ public class Todo {
     public String day;
     public String id;
     public double time;
-    public boolean flag;
+
 
     //생성자
     public Todo() {
@@ -43,7 +43,6 @@ public class Todo {
         result.put("id", id);
         result.put("day", day);
         result.put("time", time);
-        result.put("flag", flag);
         return result;
     }
 }

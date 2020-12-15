@@ -1,6 +1,5 @@
 package com.example.afinal;
 
-import android.app.ActionBar;
 import android.app.ProgressDialog;
 import android.app.Service;
 import android.content.ComponentName;
@@ -8,20 +7,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.AssetManager;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
-import android.widget.Adapter;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -31,18 +25,10 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Array;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Timer;
-import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -105,7 +91,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Context
         mContext = this;
-        timer=new Timer();
+        timer = new Timer();
 
         //quote
         quote = findViewById(R.id.quotes);
@@ -195,14 +181,19 @@ public class MainActivity extends AppCompatActivity {
         startService(intent);
         bindService(intent, mConnection, BIND_AUTO_CREATE);
     }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        //listView 클리어
+        timer.cancel();
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        for (int i = 0; i < listItemId.length; i++) {
-            if (listItemId[i] != null) {
-                mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).child(listItemId[i]).child("flag").setValue(false);
-            }
-        }
+        unbindService(mConnection);
+        stopService(intent);
     }
 
     //Timer____LEGACY

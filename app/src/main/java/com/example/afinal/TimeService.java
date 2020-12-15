@@ -9,11 +9,9 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.Build;
 import android.os.IBinder;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-
 
 
 public class TimeService extends Service {
@@ -21,9 +19,6 @@ public class TimeService extends Service {
     Notification notification;
     NotificationChannel notificationChannel;
     NotificationManager notificationManager;
-    String curTime;
-    String[] curTimeArr;
-    String[] listItemId = new String[5];
 
     class TimeBinder extends Binder {
         TimeService getService() {
@@ -43,11 +38,13 @@ public class TimeService extends Service {
         notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
         notificationManager.createNotificationChannel(notificationChannel);
         Notification.Builder builder = new Notification.Builder(this, notificationChannel.getId());
-        notification = builder.setContentTitle("공부방울")
-                .setContentText("시간 적자")
-                .setContentIntent(pendingIntentintent)
-                .setSmallIcon(R.mipmap.ic_main_foreground)
-                .build();
+
+
+            notification = builder.setContentTitle("공부방울")
+                    .setContentText("시간 적자")
+                    .setContentIntent(pendingIntentintent)
+                    .setSmallIcon(R.mipmap.ic_main_foreground)
+                    .build();
         startForeground(123, notification);
     }
 
@@ -56,20 +53,19 @@ public class TimeService extends Service {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-
         return mBinder;
     }
 
     @Override
     public boolean onUnbind(Intent intent) {
-
+        notificationManager.cancelAll();
         return super.onUnbind(intent);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
 
-        return START_STICKY;
+        return START_NOT_STICKY;
     }
 
 }

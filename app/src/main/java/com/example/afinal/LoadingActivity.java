@@ -17,7 +17,6 @@ public class LoadingActivity extends Activity {
     }
 
 
-
     public void startLoading() {
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {

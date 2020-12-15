@@ -13,6 +13,7 @@ public class PlannerActivity extends AppCompatActivity {
     String yearId;
     Intent i;
     CalendarView calendarView;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -22,29 +23,28 @@ public class PlannerActivity extends AppCompatActivity {
         calendarView.setOnDateChangeListener(new CalendarView.OnDateChangeListener() {
 
 
-
-
             @Override
             public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
 
                 month++;
                 String formattedDay = String.format("%02d", dayOfMonth);
-                String formattedMonth = String.format("%02d",month);
+                String formattedMonth = String.format("%02d", month);
 
-                Toast.makeText(PlannerActivity.this, year+":"+formattedMonth+":"+formattedDay, Toast.LENGTH_SHORT).show();
+                Toast.makeText(PlannerActivity.this, year + ":" + formattedMonth + ":" + formattedDay, Toast.LENGTH_SHORT).show();
                 i = new Intent(PlannerActivity.this, PlannerNote.class);
-                yearId = year+"-"+formattedMonth+"-"+formattedDay;
+                yearId = year + "-" + formattedMonth + "-" + formattedDay;
                 i.putExtra("ID", yearId);
                 startActivity(i);
             }
         });
     }
-    public void click(View v){
+
+    public void click(View v) {
         Intent intentMain = new Intent(PlannerActivity.this, MainActivity.class);
         Intent intentStatistics = new Intent(PlannerActivity.this, StatisticsActivity.class);
         int btnId = v.getId();
 
-        switch(btnId){
+        switch (btnId) {
             case R.id.status:
                 startActivity(intentStatistics);
                 break;

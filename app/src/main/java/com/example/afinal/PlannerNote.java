@@ -9,7 +9,6 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -17,12 +16,7 @@ import android.widget.ListView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -136,7 +130,7 @@ public class PlannerNote extends AppCompatActivity {
                     goDetail.putExtra("MONTHANDDAY", data);
                     startActivity(goDetail);
                 } else {
-                    alertDialog= builder.create();
+                    alertDialog = builder.create();
                     alertDialog.show();
                 }
             }
@@ -188,7 +182,7 @@ public class PlannerNote extends AppCompatActivity {
 
     public void removeTodo(String month, String day, String id) {
         mDatabase.child("datas").child(month).child(day).child(id).removeValue();
-        count=count-1;
+        count = count - 1;
     }
 
 }
