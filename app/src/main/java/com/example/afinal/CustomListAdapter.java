@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
-//커스텀리스트뷰 시작 재선
 //customViewHolder=>현재 선택한 view
 //parent.getChildAt(int i).findViewById(R.id.~~~); 원하는 view 선택
 class ItemData {
@@ -40,11 +39,13 @@ public class CustomListAdapter extends BaseAdapter {
 
     LayoutInflater inflater = null;
     private ArrayList<ItemData> m_oData = new ArrayList<ItemData>();
-    String[] curTimeArr;
-    String curTime;
+
     String[] listItemId = new String[5];
     Double[] timeCount = new Double[5];
     TimerTask[] timerTasks = new TimerTask[5];
+
+    DateAndTimer dateAndTimer=new DateAndTimer();
+
     private DatabaseReference mDatabase;
 
     public static class CustomViewHolder {
@@ -53,7 +54,6 @@ public class CustomListAdapter extends BaseAdapter {
         public TextView importance;
         public TextView time;
         public Button startButton;
-        public Timer timer;
     }
 
     public CustomListAdapter(ArrayList<ItemData> _oData) {
@@ -77,7 +77,10 @@ public class CustomListAdapter extends BaseAdapter {
 
     @Override
     public View getView(final int position, View convertView, final ViewGroup parent) {
+
+        //건들노노요 진짜중요 이거 ㅠ
         final CustomViewHolder customViewHolder;
+
         if (convertView == null) {
             final Context context = parent.getContext();
             if (inflater == null) {
@@ -95,17 +98,11 @@ public class CustomListAdapter extends BaseAdapter {
             customViewHolder = (CustomViewHolder) convertView.getTag();
         }
 
-        //ㅠㅠ
-        //Dates
-        Date date = new Date(System.currentTimeMillis());
-        final SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
-        curTime = format1.format(date);
-        curTimeArr = curTime.split("-");
         //현재시간 출력
-        Log.d("MAINACTIVITY_TIME", curTimeArr[1] + "-" + curTimeArr[2]);
+        Log.d("MAINACTIVITY_TIME", dateAndTimer.curTimeArr[1] + "-" + dateAndTimer.curTimeArr[2]);
         //database
         mDatabase = FirebaseDatabase.getInstance().getReference();
-        mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).addListenerForSingleValueEvent(new ValueEventListener() {
+        mDatabase.child("datas").child(dateAndTimer.curTimeArr[1]).child(dateAndTimer.curTimeArr[2]).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Log.d("CUSTOMLISTVIEW_FIREBASE", dataSnapshot.toString());
@@ -130,7 +127,7 @@ public class CustomListAdapter extends BaseAdapter {
         customViewHolder.todo.setText(m_oData.get(position).todo);
         customViewHolder.estimatedTime.setText(m_oData.get(position).times);
         customViewHolder.importance.setText(m_oData.get(position).importance);
-        customViewHolder.time.setText(getTimerText(Double.parseDouble(m_oData.get(position).time)));
+        customViewHolder.time.setText(dateAndTimer.getTimerText(Double.parseDouble(m_oData.get(position).time)));
 
         //리스트뷰의 타이머 클릭했을때 타이머시작 & stop 구현
 
@@ -159,7 +156,7 @@ public class CustomListAdapter extends BaseAdapter {
                         @Override
                         public void run() {
                             timeCount[position]++;
-                            mDatabase.child("datas").child(curTimeArr[1]).child(curTimeArr[2]).child(listItemId[position]).child("time").setValue(timeCount[position]);
+                            mDatabase.child("datas").child(dateAndTimer.curTimeArr[1]).child(dateAndTimer.curTimeArr[2]).child(listItemId[position]).child("time").setValue(timeCount[position]);
                         }
                     };
                     ((MainActivity) MainActivity.mContext).timer.scheduleAtFixedRate(timerTasks[position], 1000, 1000);
@@ -172,21 +169,7 @@ public class CustomListAdapter extends BaseAdapter {
                 }
             }
         });
-
         return convertView;
-    }
-
-    private String getTimerText(double time) {
-        int rounded = (int) Math.round(time); // double형인 변수 time을 int형으로 형변환
-        int seconds = ((rounded % 86400) % 3600) % 60; // 초
-        int minutes = ((rounded % 86400) % 3600) / 60; // 분
-        int hours = ((rounded % 86400) / 3600); // 시간
-
-        return formatTime(seconds, minutes, hours);
-    }
-
-    private String formatTime(int seconds, int minutes, int hours) {
-        return String.format("%02d", hours) + " : " + String.format("%02d", minutes) + " : " + String.format("%02d", seconds);
     }
 
     public void addItem(ItemData data) {

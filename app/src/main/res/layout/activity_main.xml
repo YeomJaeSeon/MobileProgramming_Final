@@ -17,6 +17,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:backgroundTint="@color/colorPrimary">
+
         <TextView
             android:id="@+id/timeText"
             android:layout_width="match_parent"
@@ -36,13 +37,11 @@
         app:layout_constraintHeight_min="100dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/timerToolbar"
-        >
-    </ListView>
+        app:layout_constraintTop_toBottomOf="@id/timerToolbar"></ListView>
 
     <!-- 명언-->
     <LinearLayout
-        
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/viewMarginSmall"
