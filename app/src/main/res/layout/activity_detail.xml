@@ -136,12 +136,15 @@
 
     <Button
         android:id="@+id/add"
+        style="@style/Widget.MaterialComponents.Button.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:onClick="click"
         android:text="추가"
-        android:textSize="30sp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/small_font_size"
+        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.8"
         app:layout_constraintStart_toStartOf="parent"
@@ -149,12 +152,15 @@
 
     <Button
         android:id="@+id/goback"
+        style="@style/Widget.MaterialComponents.Button.Icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:onClick="click"
         android:text="뒤로가기"
-        android:textSize="30sp"
+        android:textColor="@color/white"
+        android:textSize="@dimen/small_font_size"
+        android:textStyle="bold"
         app:layout_constraintEnd_toStartOf="@+id/add"
         app:layout_constraintHorizontal_bias="0.532"
         app:layout_constraintStart_toStartOf="parent"

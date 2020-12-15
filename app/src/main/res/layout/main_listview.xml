@@ -14,11 +14,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:background="@color/green"
+            android:layout_marginTop="5dp"
+            android:maxWidth="70dp"
+            android:maxHeight="35dp"
             android:minWidth="70dp"
-            android:minHeight="40dp"
-            android:shadowRadius="5"
+            android:minHeight="35dp"
             android:text="START"
-            android:textColor="@color/green" />
+            android:textColor="@color/white" />
 
         <TextView
             android:id="@id/time"

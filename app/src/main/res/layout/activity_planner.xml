@@ -7,11 +7,11 @@
 
     <CalendarView
         android:id="@+id/calendarView"
-        app:layout_constraintTop_toTopOf="parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"></CalendarView>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"></CalendarView>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,27 +23,40 @@
 
         <Button
             android:id="@+id/status"
+            style="@style/Widget.MaterialComponents.Button.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="click"
-            android:text="통계" />
+            android:text="통계"
+            android:textColor="@color/white"
+            android:textSize="@dimen/small_font_size"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/home"
+            style="@style/Widget.MaterialComponents.Button.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+
             android:layout_weight="1"
             android:onClick="click"
-            android:text="홈" />
+            android:text="홈"
+            android:textColor="@color/white"
+            android:textSize="@dimen/small_font_size"
+            android:textStyle="bold" />
 
         <Button
             android:id="@+id/planner"
+            style="@style/Widget.MaterialComponents.Button.Icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:onClick="click"
-            android:text="플래너" />
+            android:text="플래너"
+            android:textColor="@color/white"
+            android:textSize="@dimen/small_font_size"
+            android:textStyle="bold" />
     </LinearLayout>
 
 

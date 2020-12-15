@@ -77,15 +77,23 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
+            android:textSize="@dimen/small_font_size"
+            android:textColor="@color/white"
+            android:textStyle="bold"
             android:id="@+id/status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            style="@style/Widget.MaterialComponents.Button.Icon"
             android:onClick="switchIntent"
             android:text="통계" />
 
         <Button
             android:id="@+id/home"
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            android:textSize="@dimen/small_font_size"
+            android:textColor="@color/white"
+            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -94,6 +102,10 @@
 
         <Button
             android:id="@+id/planner"
+            style="@style/Widget.MaterialComponents.Button.Icon"
+            android:textSize="@dimen/small_font_size"
+            android:textColor="@color/white"
+            android:textStyle="bold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"

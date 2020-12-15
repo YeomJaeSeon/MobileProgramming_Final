@@ -11,16 +11,15 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
+
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.Timer;
 import java.util.TimerTask;
 
 //customViewHolder=>현재 선택한 view
@@ -44,7 +43,7 @@ public class CustomListAdapter extends BaseAdapter {
     Double[] timeCount = new Double[5];
     TimerTask[] timerTasks = new TimerTask[5];
 
-    DateAndTimer dateAndTimer=new DateAndTimer();
+    DateAndTimer dateAndTimer = new DateAndTimer();
 
     private DatabaseReference mDatabase;
 
@@ -141,10 +140,12 @@ public class CustomListAdapter extends BaseAdapter {
                         if (parent.getChildAt(i) != null) {
                             Button btn = (Button) parent.getChildAt(i).findViewById(R.id.startstopbutton);
                             btn.setText("START");
+                            btn.setBackgroundColor(ContextCompat.getColor(parent.getContext(), R.color.green));
                         }
                     }
                     //현재 선택한 버튼은 STOP으로 바꾸자
                     customViewHolder.startButton.setText("STOP");
+                    customViewHolder.startButton.setBackgroundColor(ContextCompat.getColor(parent.getContext(), R.color.red));
                     //현재 실행되고 있는 모든 timerTask 종료 한 다음
                     for (TimerTask timerTask : timerTasks) {
                         if (timerTask != null) {
@@ -165,6 +166,7 @@ public class CustomListAdapter extends BaseAdapter {
                 else {
                     Toast.makeText(((MainActivity) MainActivity.mContext), "스케쥴 스톱", Toast.LENGTH_SHORT).show();
                     customViewHolder.startButton.setText("START");
+                    customViewHolder.startButton.setBackgroundColor(ContextCompat.getColor(parent.getContext(),R.color.green));
                     timerTasks[position].cancel();
                 }
             }

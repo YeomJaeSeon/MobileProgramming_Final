@@ -20,6 +20,9 @@ public class TimeService extends Service {
     NotificationChannel notificationChannel;
     NotificationManager notificationManager;
 
+
+    DateAndTimer dateAndTimer;
+
     class TimeBinder extends Binder {
         TimeService getService() {
             return TimeService.this;
@@ -31,8 +34,11 @@ public class TimeService extends Service {
     public void onCreate() {
 
         super.onCreate();
+        dateAndTimer = new DateAndTimer();
+
         Intent intent = new Intent(this, MainActivity.class);
-        PendingIntent pendingIntentintent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         notificationChannel = new NotificationChannel("timeService", "timeService", NotificationManager.IMPORTANCE_DEFAULT);
         notificationChannel.setLockscreenVisibility(Notification.VISIBILITY_PUBLIC);
@@ -40,11 +46,11 @@ public class TimeService extends Service {
         Notification.Builder builder = new Notification.Builder(this, notificationChannel.getId());
 
 
-            notification = builder.setContentTitle("공부방울")
-                    .setContentText("시간 적자")
-                    .setContentIntent(pendingIntentintent)
-                    .setSmallIcon(R.mipmap.ic_main_foreground)
-                    .build();
+        notification = builder.setContentTitle("공부방울")
+                .setContentText(dateAndTimer.getTimerText(((MainActivity) MainActivity.mContext).sum))
+                .setContentIntent(pendingIntent)
+                .setSmallIcon(R.mipmap.ic_main_foreground)
+                .build();
         startForeground(123, notification);
     }
 

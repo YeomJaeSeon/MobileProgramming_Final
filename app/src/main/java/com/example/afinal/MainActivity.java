@@ -27,7 +27,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Timer;
-import java.util.TimerTask;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -36,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
     //현재시간
     DateAndTimer dateAndTimer;
-
+    public double sum;
     //명언
     TextView quote, author;
     AssetManager assetManager;
@@ -144,19 +143,30 @@ public class MainActivity extends AppCompatActivity {
                         oAdapter.addItem(oItem);
                         oAdapter.notifyDataSetChanged();
                     }
+
                 } else {
                     Log.w("MAINACTIVITY_FIREBASE", "Value 없음");
                 }
-                //로딩종료
 
-                //초기화면
-                double sum=0;
+                //초기화면 구성
+                sum=0;
                 for (int i = 0; i < times.length; i++) {
                     if (times[i] != null) {
                         sum += times[i];
                     }
                 }
-                timerText.setText(dateAndTimer.getTimerText(sum));
+                mDatabase.child("datas").child("wholeTime").setValue(sum);
+                timerText.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        timerText.setText(dateAndTimer.getTimerText(sum));
+                    }
+                });
+
+                for (int i = 0; i < times.length; i++) {
+
+                }
+                //로딩 종료
                 if (progressDialog.isShowing()) {
                     progressDialog.dismiss();
                 }
@@ -170,18 +180,19 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        timer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                double sum = 0;
-                for (int i = 0; i < times.length; i++) {
-                    if (times[i] != null) {
-                        sum += times[i];
-                    }
-                }
-                timerText.setText(dateAndTimer.getTimerText(sum));
-            }
-        }, 1000, 100);
+        //시간저장
+//        timer.scheduleAtFixedRate(new TimerTask() {
+//            @Override
+//            public void run() {
+//                sum = 0;
+//                for (int i = 0; i < times.length; i++) {
+//                    if (times[i] != null) {
+//                        sum += times[i];
+//                    }
+//                }
+//                timerText.setText(dateAndTimer.getTimerText(sum));
+//            }
+//        }, 1000, 100);
         //Service
         intent = new Intent(this, TimeService.class);
         startService(intent);
