@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                         sum += times[i];
                     }
                 }
-                mDatabase.child("datas").child("wholeTime").setValue(sum);
+                mDatabase.child("times").child(dateAndTimer.curTimeArr[1]).child(dateAndTimer.curTimeArr[2]).child("wholeTime").setValue(sum);
                 timerText.post(new Runnable() {
                     @Override
                     public void run() {

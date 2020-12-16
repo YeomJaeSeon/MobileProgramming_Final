@@ -25,6 +25,13 @@ public class DateAndTimer {
         return formatTime(seconds, minutes, hours);
     }
 
+    public String formatToHour(String time) {
+
+        int rounded = (int) Math.round(Double.parseDouble(time)); // double형인 변수 time을 int형으로 형변환
+        int hours = ((rounded % 86400) / 3600); // 시간
+
+        return String.valueOf(hours);
+    }
     public String formatTime(int seconds, int minutes, int hours) {
         return String.format("%02d", hours) + " : " + String.format("%02d", minutes) + " : " + String.format("%02d", seconds);
     }
