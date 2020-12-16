@@ -29,16 +29,6 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-class ChartData {
-    String date;
-    int time;
-
-    ChartData(String _date, int _time) {
-        this.date = _date;
-        this.time = _time;
-    }
-}
-
 public class StatisticsActivity extends AppCompatActivity {
 
     DateAndTimer dateAndTimer;
@@ -160,6 +150,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 totalStudy.setText("5일간 총 공부량: " + dateAndTimer.getTimerText((double)sum));
                 avergeStudy.setText("5일간 하루 평균 공부량: " + dateAndTimer.getTimerText((double)avg));
             }
+
 
             @Override
             public void onCancelled(DatabaseError error) {
