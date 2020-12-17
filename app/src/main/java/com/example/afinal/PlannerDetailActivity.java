@@ -43,6 +43,7 @@ public class PlannerDetailActivity extends AppCompatActivity {
     String importance = "";
     String id = null;
     String data;
+    double time;
     Button addBtn;
     ProgressDialog progressDialog;
 
@@ -86,6 +87,7 @@ public class PlannerDetailActivity extends AppCompatActivity {
         //intent에 Id정보가 담겨오면 수정버튼을 클릭한것임으로 id정보가 있으면 수정화면으로 변환
         if (intent.getStringExtra("id") != null) {
             id = intent.getStringExtra("id");
+            time = intent.getDoubleExtra("time", 0.0);
             //db 가져오기
             Log.d("DATE", month + " " + day);
             mDatabase.child("datas").child(month).child(day).addListenerForSingleValueEvent(
@@ -146,7 +148,7 @@ public class PlannerDetailActivity extends AppCompatActivity {
             }
 
             progressDialog.show();
-            writeNewTodo(todo, month, day, estimatedTime, importance, id, 0);
+            writeNewTodo(todo, month, day, estimatedTime, importance, id, time);
             progressDialog.dismiss();
             //setResult(RESULT_OK, intent);
             this.finish();

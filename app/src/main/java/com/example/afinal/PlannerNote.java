@@ -38,6 +38,7 @@ public class PlannerNote extends AppCompatActivity {
     String[] days;
     String data;
     String[] listItemId = new String[5];
+    double[] listItemTime = new double[5];
     ProgressDialog progressDialog;
     AlertDialog alertDialog;
     AlertDialog.Builder builder;
@@ -65,8 +66,8 @@ public class PlannerNote extends AppCompatActivity {
                 goDetail.putExtra("month", days[1]);
                 goDetail.putExtra("day", days[2]);
                 goDetail.putExtra("MONTHANDDAY", data);
+                goDetail.putExtra("time", listItemTime[itemId.position]);
                 startActivity(goDetail);
-
                 return true;
             //삭제
             case 2:
@@ -146,9 +147,10 @@ public class PlannerNote extends AppCompatActivity {
         super.onStart();
 
         //listItem 초기화
-        int i = 0;
-        for (String id : listItemId) {
-            listItemId[i++] = "";
+        for (int i = 0; i < listItemId.length; i++) {
+            listItemId[i] = "";
+            listItemTime[i] = 0.0;
+            i++;
         }
         listItem.clear();
 
@@ -163,7 +165,9 @@ public class PlannerNote extends AppCompatActivity {
                         count = (int) dataSnapshot.getChildrenCount();
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
                             listItem.add("할일:" + child.getValue(Todo.class).name + ", 걸리는 시간:" + child.getValue(Todo.class).estimatedTime + "시간" + ", 중요도:" + child.getValue(Todo.class).importance);
-                            listItemId[i++] = child.getKey();
+                            listItemId[i] = child.getKey();
+                            listItemTime[i] = child.getValue(Todo.class).time;
+                            i++;
                         }
                         adapter.notifyDataSetChanged();
                         progressDialog.dismiss();
