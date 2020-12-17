@@ -41,10 +41,12 @@ public class StatisticsActivity extends AppCompatActivity {
     String[] xVal;
     String[] yVal;
     String[] totalVal;
+    double[] times;
     BarChart barChart;
     ArrayList<BarEntry> dates;
     TextView totalStudy;
     TextView avergeStudy;
+
     int sum;
     int avg;
 
@@ -73,6 +75,7 @@ public class StatisticsActivity extends AppCompatActivity {
 
         xVal = new String[]{"0", "0", "0", "0", "0",};
         yVal = new String[]{"0", "0", "0", "0", "0",};
+        times=new double[]{0.0,0.0,0.0,0.0,0.0};
         totalVal = new String[]{"0", "0", "0", "0", "0"};
 
         //chart
@@ -95,12 +98,14 @@ public class StatisticsActivity extends AppCompatActivity {
                         String str = String.valueOf(dataSnapshot.child(String.valueOf(loc)).child("wholeTime").getValue());
                         if (str == "null") {
                             yVal[i] = "0";
+                            times[i]=0.0;
                         } else {
                             totalVal[i] = str;
                             yVal[i] = dateAndTimer.formatToHour(str);
+                            times[i]=Double.parseDouble(str);
                         }
                         xVal[i] = (dateAndTimer.curTimeArr[1] + "-" + String.valueOf(loc));
-                        dates.add(new BarEntry(i, Integer.parseInt(yVal[i])));
+                        dates.add(new BarEntry(i, Float.parseFloat(yVal[i])));
                         Log.d("TIMETIME", xVal[i] + "값:" + yVal[i]);
                     }
                 } else {
@@ -109,7 +114,7 @@ public class StatisticsActivity extends AppCompatActivity {
                 XAxis xAxis = barChart.getXAxis();
                 xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
                 xAxis.setValueFormatter(new IndexAxisValueFormatter(xVal));
-                xAxis.setTextSize(16f);
+                xAxis.setTextSize(15f);
                 xAxis.setTextColor(R.color.colorPrimary);
                 BarDataSet barDataSet = new BarDataSet(dates, "날짜들");
                 barDataSet.setColors(ColorTemplate.MATERIAL_COLORS);
@@ -123,7 +128,7 @@ public class StatisticsActivity extends AppCompatActivity {
                         float x = e.getX();
                         float y = e.getY();
                         String[] str = xVal[(int) x].split("-");
-                        Toast.makeText(StatisticsActivity.this, str[0] + "월" + str[1] + "일" + " " + String.format("%.0f", y) + "시간 만큼 공부함", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(StatisticsActivity.this, str[0] + "월" + str[1] + "일" + " " + dateAndTimer.getTimerText(times[(int)x]) + "만큼 공부함", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
@@ -133,13 +138,13 @@ public class StatisticsActivity extends AppCompatActivity {
                 });
                 barChart.setFitBars(true);
                 barChart.setData(barData);
-                barChart.getDescription().setText("5일간 공부량");
+                barChart.getDescription().setText("5일간 공부한 시간");
                 barChart.animateY(2000);
                 barChart.invalidate();
 
                 for (String str : totalVal) {
                     sum += Integer.parseInt(str);
-                    Log.d("TIMETIME",str+":"+sum);
+                    Log.d("TIMETIME", str + ":" + sum);
                 }
 
                 avg = sum / totalVal.length;
@@ -147,8 +152,8 @@ public class StatisticsActivity extends AppCompatActivity {
                 if (progressDialog.isShowing()) {
                     progressDialog.dismiss();
                 }
-                totalStudy.setText("5일간 총 공부량: " + dateAndTimer.getTimerText((double)sum));
-                avergeStudy.setText("5일간 하루 평균 공부량: " + dateAndTimer.getTimerText((double)avg));
+                totalStudy.setText("5일간 총 공부량: " + dateAndTimer.getTimerText((double) sum));
+                avergeStudy.setText("5일간 하루 평균 공부량: " + dateAndTimer.getTimerText((double) avg));
             }
 
 

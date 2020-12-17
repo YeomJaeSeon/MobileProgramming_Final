@@ -28,7 +28,7 @@ public class DateAndTimer {
     public String formatToHour(String time) {
 
         int rounded = (int) Math.round(Double.parseDouble(time)); // double형인 변수 time을 int형으로 형변환
-        int hours = ((rounded % 86400) / 3600); // 시간
+        double hours = ((rounded ) / 3600.0); // 시간
 
         return String.valueOf(hours);
     }

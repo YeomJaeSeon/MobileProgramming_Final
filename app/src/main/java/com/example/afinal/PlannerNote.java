@@ -49,12 +49,9 @@ public class PlannerNote extends AppCompatActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        menu.setHeaderTitle("수정 or 삭제 or 알람 설정");
+        menu.setHeaderTitle("수정 or 삭제");
         menu.add(0, 1, 0, "수정");
         menu.add(0, 2, 0, "삭제");
-        menu.add(0, 3, 0, "알람 설정");
-
-
     }
 
     @Override
@@ -165,7 +162,7 @@ public class PlannerNote extends AppCompatActivity {
                         int i = 0;
                         count = (int) dataSnapshot.getChildrenCount();
                         for (DataSnapshot child : dataSnapshot.getChildren()) {
-                            listItem.add("할일:" + child.getValue(Todo.class).name + ", 걸리는 시간:" + child.getValue(Todo.class).estimatedTime + "시간" + ", 난이도:" + child.getValue(Todo.class).importance);
+                            listItem.add("할일:" + child.getValue(Todo.class).name + ", 걸리는 시간:" + child.getValue(Todo.class).estimatedTime + "시간" + ", 중요도:" + child.getValue(Todo.class).importance);
                             listItemId[i++] = child.getKey();
                         }
                         adapter.notifyDataSetChanged();
